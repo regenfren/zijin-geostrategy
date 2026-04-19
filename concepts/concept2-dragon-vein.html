@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zijin Mining — Dragon Vein 紫金龙脉</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;600;700;800&family=Noto+Serif+SC:wght@200;400;700;900&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --base: #1A0F2E;
+    --base-deep: #120A22;
+    --copper: #B8432F;
+    --copper-light: #D4623F;
+    --jade: #7A9E8E;
+    --jade-dim: #5A7E6E;
+    --parchment: #E8DFD0;
+    --parchment-dim: rgba(232, 223, 208, 0.5);
+  }
+
+  html { font-size: 16px; scroll-behavior: smooth; }
+  body {
+    background: var(--base);
+    color: var(--parchment);
+    font-family: 'Outfit', sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* --- SLIDE SYSTEM --- */
+  .slide {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+  }
+
+  /* --- HEXAGONAL GRID PATTERN --- */
+  .hex-grid {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    opacity: 0.03;
+    background-image:
+      linear-gradient(30deg, var(--copper) 12%, transparent 12.5%, transparent 87%, var(--copper) 87.5%, var(--copper)),
+      linear-gradient(150deg, var(--copper) 12%, transparent 12.5%, transparent 87%, var(--copper) 87.5%, var(--copper)),
+      linear-gradient(30deg, var(--copper) 12%, transparent 12.5%, transparent 87%, var(--copper) 87.5%, var(--copper)),
+      linear-gradient(150deg, var(--copper) 12%, transparent 12.5%, transparent 87%, var(--copper) 87.5%, var(--copper)),
+      linear-gradient(60deg, rgba(122, 158, 142, 0.3) 25%, transparent 25.5%, transparent 75%, rgba(122, 158, 142, 0.3) 75%, rgba(122, 158, 142, 0.3)),
+      linear-gradient(60deg, rgba(122, 158, 142, 0.3) 25%, transparent 25.5%, transparent 75%, rgba(122, 158, 142, 0.3) 75%, rgba(122, 158, 142, 0.3));
+    background-size: 80px 140px;
+    background-position: 0 0, 0 0, 40px 70px, 40px 70px, 0 0, 40px 70px;
+  }
+
+  /* --- GHOST CHARACTERS --- */
+  .ghost-char {
+    font-family: 'Noto Serif SC', serif;
+    font-weight: 900;
+    color: var(--parchment);
+    opacity: 0.04;
+    font-size: 30vw;
+    line-height: 0.85;
+    position: absolute;
+    user-select: none;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* --- SCROLL PAINTING SECTION OPENER --- */
+  .scroll-opener {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--base-deep);
+  }
+
+  .scroll-opener .landscape {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+
+  .scroll-opener .landscape svg {
+    width: 100%;
+    height: 100%;
+    opacity: 0.08;
+  }
+
+  .scroll-opener .content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+  }
+
+  .scroll-opener h2 {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 800;
+    font-size: 3.5rem;
+    letter-spacing: -1px;
+    margin-bottom: 8px;
+  }
+
+  .scroll-opener .cn-section {
+    font-family: 'Noto Serif SC', serif;
+    font-weight: 200;
+    font-size: 1rem;
+    color: var(--copper);
+    letter-spacing: 6px;
+  }
+
+  /* --- VERTICAL PROVERB --- */
+  .proverb {
+    position: absolute;
+    right: 40px;
+    top: 50%;
+    transform: translateY(-50%);
+    writing-mode: vertical-rl;
+    font-family: 'Noto Serif SC', serif;
+    font-weight: 200;
+    font-size: 0.85rem;
+    color: var(--jade);
+    opacity: 0.4;
+    letter-spacing: 8px;
+    z-index: 3;
+  }
+
+  /* --- CONTENT SLIDE --- */
+  .slide-content {
+    padding: 80px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    z-index: 2;
+  }
+
+  .slide-content.anchored-bl {
+    justify-content: flex-end;
+    align-items: flex-start;
+    max-width: 65%;
+  }
+
+  .slide-content.anchored-tr {
+    justify-content: flex-start;
+    align-items: flex-end;
+    margin-left: auto;
+    max-width: 60%;
+    text-align: right;
+  }
+
+  /* --- TYPOGRAPHY --- */
+  .slide-label {
+    font-size: 0.65rem;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    color: var(--copper);
+    margin-bottom: 16px;
+    font-weight: 600;
+  }
+
+  h1 {
+    font-weight: 800;
+    font-size: 5rem;
+    line-height: 0.95;
+    letter-spacing: -2px;
+    margin-bottom: 20px;
+  }
+
+  h2 {
+    font-weight: 700;
+    font-size: 2.8rem;
+    line-height: 1.05;
+    letter-spacing: -1px;
+    margin-bottom: 16px;
+  }
+
+  .subtitle {
+    font-size: 1.05rem;
+    color: var(--parchment-dim);
+    font-weight: 200;
+    line-height: 1.7;
+    max-width: 520px;
+  }
+
+  .copper { color: var(--copper); }
+  .jade { color: var(--jade); }
+
+  /* --- COPPER LINE --- */
+  .copper-line {
+    width: 50px;
+    height: 2px;
+    background: var(--copper);
+    margin: 20px 0;
+  }
+
+  .copper-line.right { margin-left: auto; }
+
+  /* --- DATA VIZ --- */
+  .thin-chart {
+    margin-top: 32px;
+    display: flex;
+    gap: 3px;
+    align-items: flex-end;
+    height: 120px;
+  }
+  .thin-bar {
+    width: 2px;
+    background: var(--copper);
+    opacity: 0.6;
+    border-radius: 1px 1px 0 0;
+    transition: opacity 0.3s;
+  }
+  .thin-bar:hover { opacity: 1; }
+  .thin-bar.highlight {
+    background: var(--copper-light);
+    opacity: 1;
+    width: 3px;
+  }
+
+  /* --- NETWORK MAP --- */
+  .network-map {
+    position: absolute;
+    right: 80px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 35vw;
+    height: 35vw;
+    z-index: 1;
+  }
+  .network-map svg { width: 100%; height: 100%; }
+
+  /* --- BULLET LIST --- */
+  .analysis-points {
+    list-style: none;
+    margin-top: 16px;
+  }
+  .analysis-points li {
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(184, 67, 47, 0.12);
+    font-size: 0.9rem;
+    font-weight: 300;
+    line-height: 1.7;
+    color: var(--parchment-dim);
+    padding-left: 20px;
+    position: relative;
+  }
+  .analysis-points li::before {
+    content: '';
+    width: 4px;
+    height: 4px;
+    border: 1px solid var(--copper);
+    position: absolute;
+    left: 0;
+    top: 20px;
+    transform: rotate(45deg);
+  }
+  .analysis-points.right li { padding-left: 0; padding-right: 20px; }
+  .analysis-points.right li::before { left: auto; right: 0; }
+
+  /* --- KEY FIGURES --- */
+  .key-figures {
+    display: flex;
+    gap: 48px;
+    margin-top: 28px;
+  }
+  .key-figure .value {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: var(--copper);
+    line-height: 1;
+  }
+  .key-figure .label {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--jade);
+    margin-top: 6px;
+  }
+
+  /* --- SLIDE NUMBER --- */
+  .slide-num {
+    position: absolute;
+    bottom: 30px;
+    left: 80px;
+    font-size: 0.65rem;
+    letter-spacing: 3px;
+    color: var(--copper);
+    opacity: 0.3;
+    z-index: 10;
+  }
+
+  /* --- INK WASH MOUNTAINS SVG --- */
+  .ink-mountains { opacity: 0.06; }
+
+  /* --- JADE ACCENT BORDER --- */
+  .jade-border-left {
+    position: absolute;
+    left: 0; top: 0;
+    width: 3px;
+    height: 100%;
+    background: linear-gradient(180deg, transparent 10%, var(--jade) 50%, transparent 90%);
+    opacity: 0.2;
+    z-index: 5;
+  }
+
+  .nav-hint {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.6rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--copper);
+    opacity: 0.25;
+    z-index: 100;
+  }
+</style>
+</head>
+<body>
+
+<!-- ==================== SLIDE 1: TITLE ==================== -->
+<section class="slide" style="justify-content: center; align-items: center;">
+  <div class="hex-grid"></div>
+  <span class="ghost-char" style="left: -5%; top: 50%; transform: translateY(-50%); font-size: 45vw; opacity: 0.03;">紫</span>
+  <span class="ghost-char" style="right: -8%; top: 50%; transform: translateY(-50%); font-size: 40vw; opacity: 0.025;">金</span>
+  <div class="slide-content" style="align-items: center; text-align: center; max-width: 100%; width: 100%;">
+    <div class="slide-label" style="letter-spacing: 8px;">Geostrategy &mdash; KEDGE 2026</div>
+    <h1 style="font-size: 6rem; margin-bottom: 4px;">ZIJIN<br><span class="copper">MINING</span></h1>
+    <div style="font-family: 'Noto Serif SC', serif; font-weight: 200; font-size: 1.5rem; color: var(--jade); letter-spacing: 14px; margin-bottom: 32px;">紫 金 矿 业</div>
+    <div class="copper-line" style="margin: 0 auto 28px;"></div>
+    <p class="subtitle" style="text-align: center; max-width: 550px;">
+      Dragon veins of copper and gold &mdash; tracing China's resource empire across continents
+    </p>
+    <div style="margin-top: 48px; display: flex; gap: 32px; font-size: 0.7rem; opacity: 0.35; letter-spacing: 2px;">
+      <span>龙脉</span>
+      <span>&middot;</span>
+      <span>DRAGON VEIN</span>
+    </div>
+  </div>
+  <span class="slide-num">01 / 08</span>
+</section>
+
+<!-- ==================== SLIDE 2: SECTION OPENER — INK WASH ==================== -->
+<section class="scroll-opener">
+  <div class="landscape">
+    <svg viewBox="0 0 1200 600" xmlns="http://www.w3.org/2000/svg">
+      <!-- Ink wash mountain silhouettes -->
+      <path d="M0 600 L0 400 Q100 300 200 380 Q280 280 400 350 Q500 200 600 300 Q680 240 750 280 Q850 180 950 260 Q1050 200 1100 250 Q1150 230 1200 260 L1200 600 Z" fill="#E8DFD0" opacity="0.6"/>
+      <path d="M0 600 L0 450 Q150 380 300 420 Q400 350 500 400 Q600 320 700 380 Q800 300 900 350 Q1000 310 1100 340 L1200 380 L1200 600 Z" fill="#E8DFD0" opacity="0.3"/>
+      <path d="M0 600 L0 500 Q200 460 400 480 Q500 440 600 470 Q700 430 800 460 Q900 440 1000 450 Q1100 430 1200 450 L1200 600 Z" fill="#E8DFD0" opacity="0.15"/>
+    </svg>
+  </div>
+  <div class="content">
+    <div class="cn-section">第 一 部 分</div>
+    <h2>Company<br>Overview</h2>
+    <div class="copper-line" style="margin: 12px auto;"></div>
+  </div>
+  <div class="proverb">千里之行始于足下</div>
+  <span class="slide-num">02 / 08</span>
+</section>
+
+<!-- ==================== SLIDE 3: OVERVIEW — ANCHORED BOTTOM LEFT ==================== -->
+<section class="slide">
+  <div class="hex-grid"></div>
+  <span class="ghost-char" style="right: -3%; bottom: -10%; font-size: 35vw; opacity: 0.03;">矿</span>
+  <div class="jade-border-left"></div>
+  <div class="slide-content anchored-bl">
+    <div class="slide-label">Founded 1986 &mdash; Shanghang, Fujian</div>
+    <h2>From Provincial<br>Mine to <span class="copper">Global<br>Powerhouse</span></h2>
+    <div class="copper-line"></div>
+    <p class="subtitle">Zijin Mining Group has transformed from a single gold mine in southeastern China into one of the world's most aggressive resource acquirers, with operations spanning five continents.</p>
+    <div class="key-figures">
+      <div class="key-figure">
+        <div class="value">$28B</div>
+        <div class="label">Market Cap</div>
+      </div>
+      <div class="key-figure">
+        <div class="value">67t</div>
+        <div class="label">Gold / Year</div>
+      </div>
+      <div class="key-figure">
+        <div class="value">1M t</div>
+        <div class="label">Copper / Year</div>
+      </div>
+    </div>
+    <!-- Thin bar chart -->
+    <div class="thin-chart">
+      <div class="thin-bar" style="height: 15%;"></div>
+      <div class="thin-bar" style="height: 18%;"></div>
+      <div class="thin-bar" style="height: 22%;"></div>
+      <div class="thin-bar" style="height: 20%;"></div>
+      <div class="thin-bar" style="height: 28%;"></div>
+      <div class="thin-bar" style="height: 32%;"></div>
+      <div class="thin-bar" style="height: 35%;"></div>
+      <div class="thin-bar" style="height: 30%;"></div>
+      <div class="thin-bar" style="height: 38%;"></div>
+      <div class="thin-bar" style="height: 42%;"></div>
+      <div class="thin-bar" style="height: 48%;"></div>
+      <div class="thin-bar" style="height: 55%;"></div>
+      <div class="thin-bar" style="height: 52%;"></div>
+      <div class="thin-bar" style="height: 58%;"></div>
+      <div class="thin-bar" style="height: 62%;"></div>
+      <div class="thin-bar" style="height: 68%;"></div>
+      <div class="thin-bar highlight" style="height: 75%;"></div>
+      <div class="thin-bar highlight" style="height: 82%;"></div>
+      <div class="thin-bar highlight" style="height: 88%;"></div>
+      <div class="thin-bar highlight" style="height: 95%;"></div>
+    </div>
+    <div style="display: flex; justify-content: space-between; margin-top: 6px; font-size: 0.6rem; opacity: 0.3; letter-spacing: 1px; width: 100%; max-width: 250px;">
+      <span>2006</span>
+      <span>Revenue Growth</span>
+      <span>2025</span>
+    </div>
+  </div>
+  <span class="slide-num">03 / 08</span>
+</section>
+
+<!-- ==================== SLIDE 4: SECTION OPENER — GLOBAL OPS ==================== -->
+<section class="scroll-opener">
+  <div class="landscape">
+    <svg viewBox="0 0 1200 600" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0 600 L0 350 Q100 250 250 320 Q350 180 500 280 Q650 150 750 230 Q850 120 1000 210 Q1100 160 1200 200 L1200 600 Z" fill="#B8432F" opacity="0.15"/>
+      <path d="M0 600 L0 420 Q200 350 400 400 Q550 300 700 370 Q850 280 1000 330 Q1100 300 1200 320 L1200 600 Z" fill="#7A9E8E" opacity="0.1"/>
+    </svg>
+  </div>
+  <div class="content">
+    <div class="cn-section">第 二 部 分</div>
+    <h2>Global<br>Operations</h2>
+    <div class="copper-line" style="margin: 12px auto;"></div>
+  </div>
+  <div class="proverb">金山银山不如绿水青山</div>
+  <span class="slide-num">04 / 08</span>
+</section>
+
+<!-- ==================== SLIDE 5: GLOBAL OPS — ANCHORED TOP RIGHT ==================== -->
+<section class="slide">
+  <div class="hex-grid"></div>
+  <span class="ghost-char" style="left: -8%; top: -5%; font-size: 38vw; opacity: 0.03;">龙</span>
+
+  <!-- Network map on left -->
+  <div style="position: absolute; left: 60px; top: 50%; transform: translateY(-50%); width: 38vw; height: 30vw; z-index: 1;">
+    <svg viewBox="0 0 400 300" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: 100%;">
+      <!-- Connection lines -->
+      <line x1="280" y1="100" x2="140" y2="180" stroke="#B8432F" stroke-width="0.5" opacity="0.3"/>
+      <line x1="280" y1="100" x2="150" y2="100" stroke="#B8432F" stroke-width="0.5" opacity="0.3"/>
+      <line x1="280" y1="100" x2="340" y2="180" stroke="#B8432F" stroke-width="0.5" opacity="0.3"/>
+      <line x1="280" y1="100" x2="60" y2="150" stroke="#B8432F" stroke-width="0.5" opacity="0.2"/>
+      <line x1="280" y1="100" x2="200" y2="60" stroke="#B8432F" stroke-width="0.5" opacity="0.2"/>
+      <!-- China (main hub) -->
+      <circle cx="280" cy="100" r="6" fill="#B8432F"/>
+      <circle cx="280" cy="100" r="12" fill="none" stroke="#B8432F" stroke-width="0.5" opacity="0.4"/>
+      <text x="280" y="85" text-anchor="middle" fill="#E8DFD0" font-size="7" opacity="0.5" font-family="Outfit">CHINA</text>
+      <!-- DRC -->
+      <circle cx="140" cy="180" r="4" fill="#7A9E8E"/>
+      <text x="140" y="195" text-anchor="middle" fill="#E8DFD0" font-size="6" opacity="0.4" font-family="Outfit">DRC</text>
+      <!-- Serbia -->
+      <circle cx="150" cy="100" r="3.5" fill="#7A9E8E"/>
+      <text x="150" y="92" text-anchor="middle" fill="#E8DFD0" font-size="6" opacity="0.4" font-family="Outfit">SERBIA</text>
+      <!-- PNG -->
+      <circle cx="340" cy="180" r="3.5" fill="#7A9E8E"/>
+      <text x="340" y="195" text-anchor="middle" fill="#E8DFD0" font-size="6" opacity="0.4" font-family="Outfit">PNG</text>
+      <!-- Colombia -->
+      <circle cx="60" cy="150" r="3" fill="#7A9E8E"/>
+      <text x="60" y="165" text-anchor="middle" fill="#E8DFD0" font-size="6" opacity="0.4" font-family="Outfit">COLOMBIA</text>
+      <!-- Kazakhstan -->
+      <circle cx="200" cy="60" r="3" fill="#7A9E8E"/>
+      <text x="200" y="52" text-anchor="middle" fill="#E8DFD0" font-size="6" opacity="0.4" font-family="Outfit">KAZAKHSTAN</text>
+    </svg>
+  </div>
+
+  <div class="slide-content anchored-tr">
+    <div class="slide-label">15 Countries of Operation</div>
+    <h2><span class="jade">Belt &amp; Road</span><br>Resource Network</h2>
+    <div class="copper-line right"></div>
+    <ul class="analysis-points right">
+      <li>Kamoa-Kakula copper mine (DRC) — world-class discovery, 45% stake</li>
+      <li>Timok copper-gold project (Serbia) — EU gateway acquisition</li>
+      <li>Porgera gold mine (PNG) — joint venture restart with Barrick Gold</li>
+      <li>Continental Gold (Colombia) — hostile takeover, $1.4B deal</li>
+      <li>Central Asian corridor — lithium and rare earth exploration</li>
+    </ul>
+  </div>
+  <span class="slide-num">05 / 08</span>
+</section>
+
+<!-- ==================== SLIDE 6: SECTION OPENER — GEOSTRATEGY ==================== -->
+<section class="scroll-opener">
+  <div class="landscape">
+    <svg viewBox="0 0 1200 600" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0 600 L0 300 Q200 200 400 280 Q500 150 650 250 Q800 100 950 200 Q1050 150 1200 180 L1200 600 Z" fill="#E8DFD0" opacity="0.5"/>
+      <path d="M0 600 L0 380 Q300 300 500 360 Q700 280 900 340 Q1050 300 1200 320 L1200 600 Z" fill="#E8DFD0" opacity="0.2"/>
+    </svg>
+  </div>
+  <div class="content">
+    <div class="cn-section">第 三 部 分</div>
+    <h2>Geostrategic<br>Analysis</h2>
+    <div class="copper-line" style="margin: 12px auto;"></div>
+  </div>
+  <div class="proverb">运筹帷幄之中决胜千里之外</div>
+  <span class="slide-num">06 / 08</span>
+</section>
+
+<!-- ==================== SLIDE 7: STRATEGY — ANCHORED BOTTOM LEFT ==================== -->
+<section class="slide">
+  <div class="hex-grid"></div>
+  <span class="ghost-char" style="right: -5%; top: 50%; transform: translateY(-50%); font-size: 32vw; opacity: 0.03;">战</span>
+  <div class="jade-border-left"></div>
+  <div class="slide-content anchored-bl" style="max-width: 58%;">
+    <div class="slide-label">State-Enterprise Nexus</div>
+    <h2>The <span class="copper">Invisible<br>Hand</span> of Beijing</h2>
+    <div class="copper-line"></div>
+    <p class="subtitle" style="margin-bottom: 20px;">Zijin operates in the grey zone between private enterprise and state instrument — commercially driven, strategically aligned.</p>
+    <ul class="analysis-points">
+      <li>Shanghang State Asset Management holds founding stake — quasi-SOE governance</li>
+      <li>"Dual circulation" alignment: domestic resource security + global supply chain control</li>
+      <li>Access to China Development Bank & policy bank financing at preferential rates</li>
+      <li>Strategic mineral stockpiling supports national reserves for copper, cobalt, lithium</li>
+      <li>Operates in non-aligned states to reduce exposure to Western sanctions architecture</li>
+    </ul>
+  </div>
+
+  <!-- Vertical characters on right -->
+  <div style="position: absolute; right: 80px; top: 50%; transform: translateY(-50%); text-align: center;">
+    <div style="font-family: 'Noto Serif SC', serif; font-size: 4rem; color: var(--copper); opacity: 0.15; line-height: 1.5; writing-mode: vertical-rl;">
+      国家战略资源安全
+    </div>
+  </div>
+  <span class="slide-num">07 / 08</span>
+</section>
+
+<!-- ==================== SLIDE 8: CONCLUSION ==================== -->
+<section class="slide" style="justify-content: center; align-items: center;">
+  <div class="hex-grid"></div>
+  <span class="ghost-char" style="left: 50%; top: 50%; transform: translate(-50%, -50%); font-size: 50vw; opacity: 0.02;">龙</span>
+  <div class="slide-content" style="align-items: center; text-align: center; max-width: 100%; width: 100%;">
+    <div style="font-family: 'Noto Serif SC', serif; font-weight: 200; font-size: 0.9rem; color: var(--jade); letter-spacing: 6px; margin-bottom: 20px;">结 论</div>
+    <h1 style="font-size: 4rem;">The Dragon<br><span class="copper">Extends</span></h1>
+    <div class="copper-line" style="margin: 20px auto;"></div>
+    <p class="subtitle" style="text-align: center; max-width: 600px;">
+      Zijin Mining is not merely a company — it is a vector of Chinese geostrategic power, extending the dragon veins of resource control into every continent where critical minerals lie.
+    </p>
+    <!-- Seal stamp -->
+    <div style="margin-top: 48px; position: relative; display: inline-block;">
+      <div style="
+        width: 56px; height: 56px;
+        border: 2px solid var(--copper);
+        display: flex; align-items: center; justify-content: center;
+        font-family: 'Noto Serif SC', serif;
+        font-size: 1.4rem;
+        color: var(--copper);
+        opacity: 0.7;
+        transform: rotate(-3deg);
+      ">紫金</div>
+    </div>
+    <p style="margin-top: 32px; font-size: 0.65rem; opacity: 0.25; letter-spacing: 3px;">KEDGE BUSINESS SCHOOL &mdash; 谢谢</p>
+  </div>
+  <div class="proverb" style="opacity: 0.2;">龙行天下</div>
+  <span class="slide-num">08 / 08</span>
+</section>
+
+<div class="nav-hint" style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); font-size: 0.6rem; letter-spacing: 3px; text-transform: uppercase; color: var(--copper); opacity: 0.25; z-index: 100;">Scroll to navigate</div>
+
+</body>
+</html>

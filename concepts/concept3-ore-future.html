@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zijin Mining — Ore · Future 矿·未来</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Source+Sans+3:wght@200;300;400;600;700;900&family=Noto+Sans+SC:wght@100;300;400;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --white: #F5F3EF;
+    --white-pure: #FAFAF7;
+    --charcoal: #1C1C1E;
+    --charcoal-light: #3A3A3C;
+    --copper: #D4722C;
+    --copper-dim: rgba(212, 114, 44, 0.15);
+    --border: #D8D5CE;
+    --border-light: #E8E5DE;
+  }
+
+  html { font-size: 16px; scroll-behavior: smooth; }
+  body {
+    background: var(--white);
+    color: var(--charcoal);
+    font-family: 'Source Sans 3', sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* --- SLIDE SYSTEM --- */
+  .slide {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+  }
+
+  /* --- VERTICAL CHINESE TAB --- */
+  .cn-tab {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 48px;
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    background: var(--white-pure);
+  }
+  .cn-tab .char {
+    font-family: 'Noto Sans SC', sans-serif;
+    font-weight: 100;
+    font-size: 1.1rem;
+    color: var(--charcoal);
+    opacity: 0.5;
+    writing-mode: vertical-rl;
+    letter-spacing: 12px;
+  }
+  .cn-tab .red-thread {
+    width: 1px;
+    height: 40px;
+    background: var(--copper);
+    margin: 16px 0;
+    opacity: 0.6;
+  }
+
+  /* --- CONTENT AREA --- */
+  .slide-body {
+    margin-left: 48px;
+    width: calc(100% - 48px);
+    height: 100%;
+    padding: 60px 80px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+  }
+
+  /* --- TYPOGRAPHY --- */
+  .mono {
+    font-family: 'Space Mono', monospace;
+  }
+
+  .slide-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--charcoal-light);
+    opacity: 0.5;
+    margin-bottom: 16px;
+  }
+
+  h1 {
+    font-weight: 900;
+    font-size: 5rem;
+    line-height: 0.95;
+    letter-spacing: -3px;
+    color: var(--charcoal);
+    margin-bottom: 16px;
+  }
+
+  h2 {
+    font-weight: 700;
+    font-size: 2.6rem;
+    line-height: 1.05;
+    letter-spacing: -1px;
+    color: var(--charcoal);
+    margin-bottom: 12px;
+  }
+
+  h3 {
+    font-family: 'Space Mono', monospace;
+    font-weight: 700;
+    font-size: 0.75rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--copper);
+    margin-bottom: 8px;
+  }
+
+  .subtitle {
+    font-size: 1rem;
+    font-weight: 300;
+    color: var(--charcoal-light);
+    line-height: 1.7;
+    max-width: 480px;
+  }
+
+  .copper { color: var(--copper); }
+
+  /* --- THIN BORDER --- */
+  .thin-border {
+    border: 1px solid var(--border);
+    padding: 28px;
+    position: relative;
+  }
+
+  /* --- MODULAR GRID --- */
+  .mod-grid {
+    display: grid;
+    gap: 0;
+    margin-top: 28px;
+  }
+  .mod-grid-2 { grid-template-columns: 1fr 1fr; }
+  .mod-grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+
+  .mod-cell {
+    border: 1px solid var(--border);
+    padding: 28px;
+    position: relative;
+  }
+  .mod-cell + .mod-cell { margin-left: -1px; }
+
+  /* --- DATA VALUES --- */
+  .data-val {
+    font-family: 'Space Mono', monospace;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--charcoal);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .data-val.copper-accent { color: var(--copper); }
+  .data-unit {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--charcoal-light);
+    opacity: 0.5;
+  }
+
+  /* --- CONTENT BLOCKS --- */
+  .content-block {
+    border: 1px solid var(--border);
+    padding: 24px;
+    margin-bottom: -1px;
+  }
+  .content-block p {
+    font-size: 0.88rem;
+    font-weight: 300;
+    color: var(--charcoal-light);
+    line-height: 1.7;
+  }
+
+  /* --- IMAGE PLACEHOLDERS --- */
+  .img-square {
+    aspect-ratio: 1;
+    background: linear-gradient(135deg, #C8B89A 0%, #A08060 30%, #8B6B4A 60%, #6D5038 100%);
+    position: relative;
+    overflow: hidden;
+  }
+  .img-square::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 40% 40%, rgba(212, 114, 44, 0.4) 0%, transparent 40%),
+      radial-gradient(circle at 65% 70%, rgba(180, 140, 80, 0.3) 0%, transparent 35%);
+  }
+  .img-square .caption {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 1px;
+    color: white;
+    opacity: 0.7;
+    text-transform: uppercase;
+    z-index: 2;
+  }
+
+  .img-circle {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #887050 0%, #A08868 50%, #C8A878 100%);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* --- BULLET LIST --- */
+  .clean-list {
+    list-style: none;
+    margin-top: 8px;
+  }
+  .clean-list li {
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border-light);
+    font-size: 0.88rem;
+    font-weight: 300;
+    line-height: 1.6;
+    color: var(--charcoal);
+    display: flex;
+    gap: 12px;
+  }
+  .clean-list li .idx {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--copper);
+    margin-top: 3px;
+    flex-shrink: 0;
+  }
+
+  /* --- SEAL STAMP --- */
+  .seal-stamp {
+    width: 44px;
+    height: 44px;
+    border: 1.5px solid var(--copper);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Noto Sans SC', sans-serif;
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--copper);
+    transform: rotate(-2deg);
+  }
+
+  /* --- RED COLUMN DIVIDERS --- */
+  .red-divider {
+    width: 1px;
+    height: 80%;
+    background: var(--copper);
+    opacity: 0.15;
+    position: absolute;
+    top: 10%;
+  }
+
+  /* --- SLIDE NUMBER --- */
+  .slide-num {
+    position: absolute;
+    bottom: 24px;
+    right: 32px;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 2px;
+    color: var(--charcoal-light);
+    opacity: 0.25;
+    z-index: 10;
+  }
+
+  /* --- FULL BLEED IMPACT SLIDE --- */
+  .full-bleed {
+    background: linear-gradient(160deg, #4A3520 0%, #6B4830 25%, #8B6040 50%, #A07848 75%, #C8A068 100%);
+    color: var(--white);
+  }
+  .full-bleed .slide-label { color: var(--white); opacity: 0.4; }
+  .full-bleed h2 { color: var(--white); }
+  .full-bleed .subtitle { color: rgba(245, 243, 239, 0.6); }
+  .full-bleed .cn-tab { background: rgba(74, 53, 32, 0.9); border-color: rgba(245, 243, 239, 0.1); }
+  .full-bleed .cn-tab .char { color: var(--white); }
+
+  .nav-hint {
+    position: fixed;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--charcoal-light);
+    opacity: 0.2;
+    z-index: 100;
+  }
+
+  /* --- TWO COLUMN LAYOUT --- */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    height: 100%;
+  }
+  .two-col > div {
+    padding: 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+</style>
+</head>
+<body>
+
+<!-- ==================== SLIDE 1: TITLE ==================== -->
+<section class="slide">
+  <div class="cn-tab">
+    <div class="red-thread"></div>
+    <span class="char">紫金矿业</span>
+    <div class="red-thread"></div>
+  </div>
+  <div class="slide-body" style="align-items: center; text-align: center;">
+    <div class="slide-label">Geostrategy &mdash; KEDGE Business School</div>
+    <h1 style="font-size: 6.5rem; letter-spacing: -4px;">ZIJIN</h1>
+    <div style="display: flex; align-items: center; gap: 20px; margin: 4px 0 28px;">
+      <div style="flex: 1; height: 1px; background: var(--border);"></div>
+      <span class="mono" style="font-size: 0.7rem; letter-spacing: 4px; color: var(--charcoal-light); opacity: 0.5;">矿 · 未来</span>
+      <div style="flex: 1; height: 1px; background: var(--border);"></div>
+    </div>
+    <p class="subtitle" style="text-align: center; max-width: 550px;">
+      Geopolitical strategy and global resource control<br>of China's largest mining conglomerate
+    </p>
+    <div style="margin-top: 48px; display: flex; gap: 24px; align-items: center;">
+      <div class="seal-stamp">紫金</div>
+      <div style="text-align: left;">
+        <div class="mono" style="font-size: 0.6rem; opacity: 0.35; letter-spacing: 1px;">ORE · FUTURE</div>
+        <div class="mono" style="font-size: 0.6rem; opacity: 0.35; letter-spacing: 1px;">2026</div>
+      </div>
+    </div>
+  </div>
+  <span class="slide-num">01 / 07</span>
+</section>
+
+<!-- ==================== SLIDE 2: OVERVIEW ==================== -->
+<section class="slide">
+  <div class="cn-tab">
+    <div class="red-thread"></div>
+    <span class="char">矿</span>
+    <div class="red-thread"></div>
+  </div>
+  <div class="slide-body">
+    <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 48px; align-items: center;">
+      <div>
+        <div class="slide-label">01 — Company Overview</div>
+        <h2>China's Mining<br><span class="copper">Champion</span></h2>
+        <div style="width: 40px; height: 1px; background: var(--copper); margin: 16px 0;"></div>
+        <p class="subtitle">Founded in 1986 in Fujian Province as a single gold mine. Now China's largest gold producer and a top-five global copper producer, with operations in 15 countries.</p>
+
+        <div class="mod-grid mod-grid-3" style="max-width: 480px;">
+          <div class="mod-cell">
+            <div class="data-val copper-accent">$28B</div>
+            <div class="data-unit">Mkt Cap</div>
+          </div>
+          <div class="mod-cell">
+            <div class="data-val">67t</div>
+            <div class="data-unit">Gold/yr</div>
+          </div>
+          <div class="mod-cell">
+            <div class="data-val">1Mt</div>
+            <div class="data-unit">Copper/yr</div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="img-square" style="width: 100%; max-width: 320px;">
+          <span class="caption">Raw copper ore specimen</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <span class="slide-num">02 / 07</span>
+</section>
+
+<!-- ==================== SLIDE 3: FULL BLEED IMPACT ==================== -->
+<section class="slide full-bleed">
+  <div class="cn-tab">
+    <div class="red-thread"></div>
+    <span class="char">铜</span>
+    <div class="red-thread"></div>
+  </div>
+  <div class="slide-body" style="justify-content: flex-end; padding-bottom: 80px;">
+    <div class="slide-label">Satellite View</div>
+    <h2 style="font-size: 3.2rem;">Kamoa-Kakula<br>Open Pit, DRC</h2>
+    <div style="width: 40px; height: 1px; background: var(--white); opacity: 0.3; margin: 16px 0;"></div>
+    <p class="subtitle" style="max-width: 400px;">
+      World's fourth-largest copper mine. Zijin holds 45% stake. Peak production projected at 800kt copper per annum.
+    </p>
+  </div>
+  <span class="slide-num" style="color: var(--white);">03 / 07</span>
+</section>
+
+<!-- ==================== SLIDE 4: GLOBAL FOOTPRINT ==================== -->
+<section class="slide">
+  <div class="cn-tab">
+    <div class="red-thread"></div>
+    <span class="char">金</span>
+    <div class="red-thread"></div>
+  </div>
+  <div class="slide-body">
+    <div class="slide-label">02 — Global Operations</div>
+    <h2>Resource<br><span class="copper">Geography</span></h2>
+    <div style="width: 40px; height: 1px; background: var(--copper); margin: 16px 0 24px;"></div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0;">
+      <div class="content-block">
+        <h3>Copper Belt</h3>
+        <ul class="clean-list">
+          <li><span class="idx">01</span> Kamoa-Kakula, DRC — 45% stake, world-class discovery</li>
+          <li><span class="idx">02</span> Timok, Serbia — EU market gateway, upper zone development</li>
+          <li><span class="idx">03</span> Cobre Panama — monitoring stake amid regulatory shifts</li>
+        </ul>
+      </div>
+      <div class="content-block" style="border-left: none;">
+        <h3>Gold Corridor</h3>
+        <ul class="clean-list">
+          <li><span class="idx">01</span> Porgera, PNG — JV restart with Barrick Gold</li>
+          <li><span class="idx">02</span> Buritica, Colombia — $1.4B hostile acquisition</li>
+          <li><span class="idx">03</span> Zijinshan, China — flagship domestic operation</li>
+        </ul>
+      </div>
+      <div class="content-block">
+        <h3>Strategic Minerals</h3>
+        <ul class="clean-list">
+          <li><span class="idx">01</span> Lithium exploration in Central Asia & Argentina</li>
+          <li><span class="idx">02</span> Rare earth processing partnerships in Myanmar</li>
+        </ul>
+      </div>
+      <div class="content-block" style="border-left: none;">
+        <h3>Key Metrics</h3>
+        <div style="display: flex; gap: 32px; margin-top: 12px;">
+          <div>
+            <div class="data-val copper-accent" style="font-size: 1.6rem;">15</div>
+            <div class="data-unit">Countries</div>
+          </div>
+          <div>
+            <div class="data-val" style="font-size: 1.6rem;">26K</div>
+            <div class="data-unit">Workforce</div>
+          </div>
+          <div>
+            <div class="data-val" style="font-size: 1.6rem;">5</div>
+            <div class="data-unit">Continents</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Red divider -->
+    <div class="red-divider" style="left: calc(50% + 24px);"></div>
+  </div>
+  <span class="slide-num">04 / 07</span>
+</section>
+
+<!-- ==================== SLIDE 5: GEOSTRATEGY ==================== -->
+<section class="slide">
+  <div class="cn-tab">
+    <div class="red-thread"></div>
+    <span class="char">战略</span>
+    <div class="red-thread"></div>
+  </div>
+  <div class="slide-body">
+    <div style="display: grid; grid-template-columns: 0.6fr 1fr; gap: 48px; align-items: start;">
+      <div>
+        <div class="slide-label">03 — Geostrategic Analysis</div>
+        <h2>State <span class="copper">&amp;</span><br>Enterprise</h2>
+        <div style="width: 40px; height: 1px; background: var(--copper); margin: 16px 0;"></div>
+        <p class="subtitle">The convergence of Zijin's commercial expansion with Beijing's resource security doctrine creates a hybrid actor that defies simple categorization.</p>
+
+        <div style="margin-top: 32px;">
+          <div class="img-circle"></div>
+          <div class="mono" style="font-size: 0.55rem; opacity: 0.3; margin-top: 8px; letter-spacing: 1px;">MINERAL CRYSTALLINE STRUCTURE</div>
+        </div>
+      </div>
+
+      <div>
+        <div class="content-block">
+          <h3>SOE-Adjacent Governance</h3>
+          <p>Shanghang State Asset Management retains founding stake. While publicly listed, the company benefits from state-adjacent governance structures and policy alignment that blur the line between commercial and strategic interest.</p>
+        </div>
+        <div class="content-block">
+          <h3>Dual Circulation Strategy</h3>
+          <p>Zijin's expansion directly serves China's "dual circulation" economic model — securing upstream resources abroad while building domestic processing capacity. Critical minerals (copper, cobalt, lithium) are national security priorities.</p>
+        </div>
+        <div class="content-block">
+          <h3>Financing Advantage</h3>
+          <p>Access to China Development Bank and Exim Bank at preferential rates enables Zijin to outbid Western competitors. State-backed credit lines function as a de facto subsidy for strategic acquisitions.</p>
+        </div>
+        <div class="content-block">
+          <h3>Non-Aligned Portfolio</h3>
+          <p>Deliberate diversification into non-aligned states (DRC, Serbia, PNG) reduces exposure to Western sanctions architecture while building leverage in the global South.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <span class="slide-num">05 / 07</span>
+</section>
+
+<!-- ==================== SLIDE 6: RISKS ==================== -->
+<section class="slide">
+  <div class="cn-tab">
+    <div class="red-thread"></div>
+    <span class="char">险</span>
+    <div class="red-thread"></div>
+  </div>
+  <div class="slide-body">
+    <div class="slide-label">04 — Risk Assessment</div>
+    <h2>Fault <span class="copper">Lines</span></h2>
+    <div style="width: 40px; height: 1px; background: var(--copper); margin: 16px 0 24px;"></div>
+
+    <div class="mod-grid mod-grid-3">
+      <div class="mod-cell" style="padding: 32px;">
+        <h3>Environmental</h3>
+        <p style="font-size: 0.85rem; font-weight: 300; color: var(--charcoal-light); line-height: 1.7; margin-bottom: 20px;">Tailings dam incidents, water pollution in DRC and PNG. ESG compliance increasingly required by international investors and host governments.</p>
+        <div class="data-val copper-accent" style="font-size: 1.4rem;">HIGH</div>
+        <div class="data-unit">Severity</div>
+      </div>
+      <div class="mod-cell" style="padding: 32px;">
+        <h3>Geopolitical</h3>
+        <p style="font-size: 0.85rem; font-weight: 300; color: var(--charcoal-light); line-height: 1.7; margin-bottom: 20px;">US-China competition over critical minerals. Operations in conflict zones. Secondary sanctions risk for entities enabling Chinese resource strategy.</p>
+        <div class="data-val copper-accent" style="font-size: 1.4rem;">CRITICAL</div>
+        <div class="data-unit">Severity</div>
+      </div>
+      <div class="mod-cell" style="padding: 32px;">
+        <h3>Regulatory</h3>
+        <p style="font-size: 0.85rem; font-weight: 300; color: var(--charcoal-light); line-height: 1.7; margin-bottom: 20px;">EU Critical Raw Materials Act, resource nationalism in host countries, and evolving compliance standards threaten expansion plans.</p>
+        <div class="data-val" style="font-size: 1.4rem;">MEDIUM</div>
+        <div class="data-unit">Severity</div>
+      </div>
+    </div>
+  </div>
+  <span class="slide-num">06 / 07</span>
+</section>
+
+<!-- ==================== SLIDE 7: CONCLUSION ==================== -->
+<section class="slide">
+  <div class="cn-tab">
+    <div class="red-thread"></div>
+    <span class="char">结论</span>
+    <div class="red-thread"></div>
+  </div>
+  <div class="slide-body" style="align-items: center; text-align: center;">
+    <div class="slide-label">Conclusion</div>
+    <h1 style="font-size: 4rem; letter-spacing: -2px;">Ore <span class="copper">&middot;</span> Future</h1>
+    <div style="display: flex; align-items: center; gap: 20px; margin: 16px 0 28px; width: 100%; max-width: 400px;">
+      <div style="flex: 1; height: 1px; background: var(--border);"></div>
+      <span class="mono" style="font-size: 0.6rem; letter-spacing: 3px; opacity: 0.4;">矿 · 未来</span>
+      <div style="flex: 1; height: 1px; background: var(--border);"></div>
+    </div>
+    <p class="subtitle" style="text-align: center; max-width: 560px;">
+      Zijin Mining represents the new frontier of state-commercial convergence in resource geopolitics — a bellwether for how China projects strategic power through corporate vectors in an era of great power competition.
+    </p>
+
+    <!-- Seal stamp on conclusion -->
+    <div style="margin-top: 48px; display: flex; flex-direction: column; align-items: center; gap: 16px;">
+      <div class="seal-stamp">紫金</div>
+      <div class="mono" style="font-size: 0.55rem; opacity: 0.25; letter-spacing: 2px;">KEDGE BUSINESS SCHOOL — 谢谢</div>
+    </div>
+  </div>
+  <span class="slide-num">07 / 07</span>
+</section>
+
+<div class="nav-hint">Scroll to navigate</div>
+
+</body>
+</html>

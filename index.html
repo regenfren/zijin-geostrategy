@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zijin Mining — Dragon Vein (Crystal) 紫金矿业</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;600;700;800;900&family=Noto+Serif+SC:wght@200;400;700;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --void: #0C0818; --void-mid: #140F24; --void-light: #1E1834;
+    --ember: #E05830; --ember-dim: rgba(224, 88, 48, 0.12);
+    --cyan: #3ABCC8; --cyan-dim: rgba(58, 188, 200, 0.1);
+    --ice: #E8E4F0; --ice-dim: rgba(232, 228, 240, 0.4);
+    --gold: #D4A657; --lithium: #6BD4C8; --zinc: #B98FD9;
+    --grid-line: rgba(58, 188, 200, 0.04);
+  }
+
+  html { font-size: 16px; scroll-behavior: smooth; scroll-snap-type: y mandatory; }
+  body { background: var(--void); color: var(--ice); font-family: 'Space Grotesk', sans-serif; overflow-x: hidden; }
+  .slide { width: 100vw; height: 100vh; position: relative; overflow: hidden; scroll-snap-align: start; scroll-snap-stop: always; }
+
+  .crystal-grid {
+    position: absolute; inset: 0; z-index: 0; pointer-events: none;
+    background-image: linear-gradient(var(--grid-line) 1px, transparent 1px), linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+  .ghost { font-family: 'Noto Serif SC', serif; font-weight: 900; color: var(--cyan); position: absolute; user-select: none; pointer-events: none; z-index: 1; line-height: 0.85; }
+  .glow-line { position: absolute; z-index: 1; pointer-events: none; background: linear-gradient(90deg, transparent, var(--cyan), transparent); height: 1px; opacity: 0.06; }
+  .glow-line-v { position: absolute; z-index: 1; pointer-events: none; background: linear-gradient(180deg, transparent, var(--ember), transparent); width: 1px; opacity: 0.06; }
+
+  .opener { display: flex; align-items: center; justify-content: center; background: linear-gradient(180deg, var(--void) 0%, #080614 100%); }
+  .opener .inner { position: relative; z-index: 2; text-align: center; }
+  .opener h2 { font-weight: 700; font-size: 3rem; letter-spacing: -1px; margin-bottom: 6px; }
+  .opener .cn-label { font-family: 'Noto Serif SC', serif; font-weight: 200; font-size: 0.85rem; color: var(--ember); letter-spacing: 8px; }
+
+  .proverb { position: absolute; z-index: 3; writing-mode: vertical-rl; font-family: 'Noto Serif SC', serif; font-weight: 200; letter-spacing: 10px; opacity: 0.15; }
+
+  .body { position: relative; z-index: 2; height: 100%; display: flex; }
+  .col { padding: 70px; display: flex; flex-direction: column; justify-content: center; }
+  .col-55 { width: 55%; } .col-45 { width: 45%; } .col-full { width: 100%; }
+  .center-content { position: relative; z-index: 2; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 100%; padding: 60px; }
+
+  .label { font-size: 0.6rem; letter-spacing: 5px; text-transform: uppercase; color: var(--ember); margin-bottom: 14px; font-weight: 500; }
+  h1 { font-weight: 700; font-size: 5.5rem; line-height: 0.92; letter-spacing: -3px; margin-bottom: 16px; }
+  h2 { font-weight: 700; font-size: 2.6rem; line-height: 1.05; letter-spacing: -1px; margin-bottom: 12px; }
+  h3 { font-weight: 500; font-size: 0.65rem; letter-spacing: 3px; text-transform: uppercase; color: var(--cyan); margin-bottom: 8px; }
+  .sub { font-size: 0.95rem; color: var(--ice-dim); font-weight: 300; line-height: 1.8; max-width: 500px; }
+  .ember { color: var(--ember); } .cyan { color: var(--cyan); }
+
+  .rule { width: 48px; height: 2px; margin: 16px 0; }
+  .rule-ember { background: var(--ember); } .rule-cyan { background: var(--cyan); }
+  .rule.center { margin: 16px auto; }
+
+  .stat-strip { display: flex; gap: 0; margin-top: 24px; }
+  .stat-cell { padding: 20px 28px; border: 1px solid var(--cyan-dim); position: relative; }
+  .stat-cell + .stat-cell { margin-left: -1px; }
+  .stat-cell .v { font-size: 1.8rem; font-weight: 700; color: var(--ice); line-height: 1; }
+  .stat-cell .v span { font-size: 0.9rem; font-weight: 300; }
+  .stat-cell .l { font-size: 0.55rem; letter-spacing: 2px; text-transform: uppercase; color: var(--cyan); margin-top: 4px; opacity: 0.7; }
+  .stat-cell.highlight { border-color: var(--ember-dim); }
+  .stat-cell.highlight .v { color: var(--ember); }
+
+  .card-grid { display: grid; gap: 12px; margin-top: 20px; }
+  .card-grid-2 { grid-template-columns: 1fr 1fr; }
+  .c-card { padding: 22px; position: relative; border: 1px solid var(--cyan-dim); background: linear-gradient(135deg, rgba(58, 188, 200, 0.02), transparent); }
+  .c-card::after { content: ''; position: absolute; top: -1px; left: -1px; width: 12px; height: 12px; border-top: 2px solid var(--ember); border-left: 2px solid var(--ember); opacity: 0.4; }
+  .c-card p { font-size: 0.82rem; font-weight: 300; color: var(--ice-dim); line-height: 1.7; }
+
+  .c-list { list-style: none; margin-top: 10px; }
+  .c-list li { padding: 12px 0 12px 28px; position: relative; border-bottom: 1px solid var(--cyan-dim); font-size: 0.85rem; font-weight: 300; line-height: 1.7; color: var(--ice-dim); }
+  .c-list li::before { content: ''; position: absolute; left: 0; top: 17px; width: 10px; height: 10px; border: 1px solid var(--ember); opacity: 0.4; clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); }
+
+  .hex-badge { width: 64px; height: 64px; display: flex; align-items: center; justify-content: center; position: relative; font-family: 'Noto Serif SC', serif; font-size: 1.4rem; color: var(--ember); }
+  .hex-badge::before { content: ''; position: absolute; inset: 0; border: 1.5px solid var(--ember); opacity: 0.5; clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); }
+
+  @keyframes scanline { 0% { transform: translateY(-100%); } 100% { transform: translateY(100vh); } }
+  .scanline { position: absolute; left: 0; width: 100%; height: 2px; background: linear-gradient(90deg, transparent, var(--cyan), transparent); opacity: 0.03; z-index: 0; pointer-events: none; animation: scanline 8s linear infinite; }
+  .sn { position: absolute; bottom: 24px; right: 40px; font-size: 0.58rem; letter-spacing: 3px; color: var(--cyan); opacity: 0.2; z-index: 10; font-family: 'Space Grotesk', sans-serif; }
+  .nav-hint { position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); font-size: 0.55rem; letter-spacing: 3px; text-transform: uppercase; color: var(--cyan); opacity: 0.12; z-index: 100; }
+
+  /* ---- MAP SLIDE ---- */
+  .map-slide .header { position: absolute; top: 40px; left: 60px; z-index: 5; max-width: 440px; }
+  .map-slide .cn-label { font-family: 'Noto Serif SC', serif; font-weight: 200; font-size: 0.85rem; color: var(--ember); letter-spacing: 8px; margin-bottom: 12px; }
+  .map-slide .header h1 { font-weight: 700; font-size: 3.2rem; line-height: 0.95; letter-spacing: -2px; margin-bottom: 0; }
+  .map-slide .header h1 .accent { color: var(--ember); }
+  .map-slide .header .sub { font-size: 0.76rem; color: var(--ice-dim); font-weight: 300; letter-spacing: 2px; margin-top: 10px; text-transform: uppercase; max-width: none; }
+  .map-slide .map-wrap { position: absolute; inset: 0; z-index: 2; }
+  .map-slide .map-wrap svg { width: 100%; height: 100%; }
+  .land { fill: var(--void-mid); stroke: rgba(58,188,200,0.18); stroke-width: 0.5; transition: fill 0.3s ease; }
+  .land.focus { fill: var(--void-light); stroke: rgba(58,188,200,0.35); }
+  .land.hover { fill: rgba(224, 88, 48, 0.14); stroke: var(--ember); stroke-width: 1; }
+  .graticule { fill: none; stroke: rgba(58, 188, 200, 0.06); stroke-width: 0.5; }
+  .border { fill: none; stroke: rgba(232, 228, 240, 0.12); stroke-width: 0.4; }
+  .op { cursor: pointer; }
+  .op .pulse { transform-origin: center; animation: pulse 2.6s ease-in-out infinite; }
+  @keyframes pulse { 0%, 100% { opacity: 0.55; r: 6; } 50% { opacity: 0; r: 18; } }
+  .op .dot { filter: drop-shadow(0 0 6px currentColor); transition: r 0.2s ease; }
+  .op:hover .dot { r: 7; }
+  .op .label-bg { fill: rgba(12,8,24,0.82); stroke: rgba(58,188,200,0.22); stroke-width: 0.5; }
+  .op .label-txt { font-family: 'Space Grotesk', sans-serif; font-size: 10px; fill: var(--ice); font-weight: 500; letter-spacing: 0.5px; pointer-events: none; }
+  .op .label-meta { font-family: 'Space Grotesk', sans-serif; font-size: 8px; fill: var(--ice-dim); letter-spacing: 0.5px; pointer-events: none; }
+  .op.copper .dot, .op.copper .pulse { color: var(--ember); fill: var(--ember); }
+  .op.gold .dot, .op.gold .pulse { color: var(--gold); fill: var(--gold); }
+  .op.lithium .dot, .op.lithium .pulse { color: var(--lithium); fill: var(--lithium); }
+  .op.zinc .dot, .op.zinc .pulse { color: var(--zinc); fill: var(--zinc); }
+
+  .legend { position: absolute; bottom: 40px; left: 60px; z-index: 5; display: flex; gap: 22px; padding: 14px 20px; border: 1px solid var(--cyan-dim); background: rgba(12,8,24,0.6); backdrop-filter: blur(6px); }
+  .legend::before { content: ''; position: absolute; top: -1px; left: -1px; width: 10px; height: 10px; border-top: 2px solid var(--ember); border-left: 2px solid var(--ember); opacity: 0.5; }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase; color: var(--ice-dim); }
+  .legend-dot { width: 9px; height: 9px; border-radius: 50%; box-shadow: 0 0 8px currentColor; }
+
+  .info-panel { position: absolute; top: 50%; right: 50px; transform: translateY(-50%); z-index: 6; width: 340px; padding: 22px 26px; border: 1px solid var(--cyan-dim); background: linear-gradient(135deg, rgba(58,188,200,0.04), transparent), rgba(12,8,24,0.85); backdrop-filter: blur(8px); opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
+  .info-panel.show { opacity: 1; pointer-events: auto; }
+  .info-panel::before { content: ''; position: absolute; top: -1px; left: -1px; width: 14px; height: 14px; border-top: 2px solid var(--ember); border-left: 2px solid var(--ember); opacity: 0.5; }
+  .info-panel h3 { font-size: 0.58rem; letter-spacing: 3px; color: var(--cyan); text-transform: uppercase; margin-bottom: 8px; }
+  .info-panel h2 { font-size: 1.55rem; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 4px; }
+  .info-panel .country { font-family: 'Noto Serif SC', serif; font-weight: 200; color: var(--ember); letter-spacing: 4px; font-size: 0.8rem; margin-bottom: 16px; }
+  .info-panel .rule-ember { width: 32px; height: 2px; background: var(--ember); margin-bottom: 14px; }
+  .info-panel p { font-size: 0.82rem; font-weight: 300; color: var(--ice-dim); line-height: 1.7; margin-bottom: 14px; }
+  .info-panel .meta { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--cyan-dim); }
+  .info-panel .meta .l { font-size: 0.52rem; letter-spacing: 2px; text-transform: uppercase; color: var(--cyan); opacity: 0.7; margin-bottom: 3px; }
+  .info-panel .meta .v { font-size: 0.9rem; color: var(--ice); font-weight: 500; }
+  .info-panel .close { position: absolute; top: 14px; right: 16px; color: var(--ice-dim); cursor: pointer; font-size: 1rem; opacity: 0.5; transition: opacity 0.2s; }
+  .info-panel .close:hover { opacity: 1; color: var(--ember); }
+
+  .hex-badge-fixed { position: absolute; bottom: 40px; right: 50px; width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; font-family: 'Noto Serif SC', serif; font-size: 1.05rem; color: var(--ember); z-index: 5; }
+  .hex-badge-fixed::before { content: ''; position: absolute; inset: 0; border: 1.5px solid var(--ember); opacity: 0.5; clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); }
+
+  /* split pane for EU + Oceania */
+  .split { position: absolute; inset: 0; z-index: 2; display: flex; }
+  .pane { flex: 1; position: relative; height: 100%; }
+  .pane svg { width: 100%; height: 100%; }
+  .pane-label { position: absolute; top: 140px; z-index: 4; font-family: 'Noto Serif SC', serif; color: var(--cyan); font-weight: 200; letter-spacing: 10px; font-size: 0.75rem; opacity: 0.55; text-transform: uppercase; }
+  .pane-label .en { display: block; font-family: 'Space Grotesk', sans-serif; font-weight: 500; font-size: 0.6rem; letter-spacing: 4px; color: var(--ice-dim); margin-top: 4px; }
+  .pane-left .pane-label { left: 60px; }
+  .pane-right .pane-label { right: 60px; text-align: right; }
+  .divider { position: absolute; top: 14%; bottom: 14%; left: 50%; width: 1px; background: linear-gradient(180deg, transparent, rgba(58,188,200,0.25), transparent); z-index: 3; }
+  .divider::before, .divider::after { content: ''; position: absolute; left: 50%; transform: translateX(-50%); width: 8px; height: 8px; border: 1px solid var(--ember); opacity: 0.5; clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); }
+  .divider::before { top: -4px; } .divider::after { bottom: -4px; }
+  .contrast-note { position: absolute; bottom: 110px; left: 50%; transform: translateX(-50%); z-index: 5; font-size: 0.58rem; letter-spacing: 4px; text-transform: uppercase; color: var(--ice-dim); opacity: 0.55; text-align: center; white-space: nowrap; }
+  .contrast-note .accent { color: var(--ember); }
+  .map-slide .legend.center { bottom: 40px; left: 50%; transform: translateX(-50%); }
+</style>
+</head>
+<body>
+
+<!-- SLIDE 1: TITLE -->
+<section class="slide">
+  <div class="crystal-grid"></div>
+  <div class="scanline"></div>
+  <span class="ghost" style="left: 50%; top: 48%; transform: translate(-50%, -50%); font-size: 52vw; opacity: 0.02;">龙</span>
+  <div class="glow-line" style="top: 30%; left: 0; width: 100%;"></div>
+  <div class="glow-line" style="top: 70%; left: 0; width: 100%;"></div>
+  <div class="glow-line-v" style="left: 25%; top: 0; height: 100%;"></div>
+  <div class="glow-line-v" style="left: 75%; top: 0; height: 100%;"></div>
+  <div class="center-content">
+    <div class="label" style="letter-spacing: 8px;">Geostrategy — KEDGE 2026</div>
+    <h1>ZIJIN<br><span class="ember">MINING</span></h1>
+    <div style="font-family: 'Noto Serif SC', serif; font-weight: 200; font-size: 1.2rem; color: var(--cyan); letter-spacing: 14px; margin-bottom: 24px; opacity: 0.6;">紫 金 矿 业</div>
+    <div class="rule rule-ember center"></div>
+    <p class="sub" style="text-align: center;">Crystalline networks of power — mapping the mineral<br>architecture of China's geostrategic ambition</p>
+    <div style="margin-top: 44px; display: flex; gap: 20px; align-items: center;">
+      <div class="hex-badge">紫金</div>
+      <div style="text-align: left;">
+        <div style="font-size: 0.55rem; color: var(--cyan); opacity: 0.4; letter-spacing: 2px;">龙脉 · 晶</div>
+        <div style="font-size: 0.55rem; opacity: 0.25; letter-spacing: 2px;">DRAGON VEIN — CRYSTAL</div>
+      </div>
+    </div>
+  </div>
+  <span class="sn">01 / 12</span>
+</section>
+
+<!-- SLIDE 2: OVERVIEW OPENER -->
+<section class="slide opener">
+  <div class="crystal-grid"></div>
+  <div style="position: absolute; inset: 0; z-index: 0;">
+    <svg viewBox="0 0 1200 600" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;">
+      <polygon points="200,600 350,300 400,380 500,200 550,280 650,150 700,250 800,180 900,280 950,220 1050,300 1200,600" fill="none" stroke="#3ABCC8" stroke-width="0.5" opacity="0.06"/>
+      <polygon points="0,600 100,400 200,450 350,350 500,420 650,350 800,400 950,340 1100,380 1200,360 1200,600" fill="none" stroke="#3ABCC8" stroke-width="0.5" opacity="0.04"/>
+    </svg>
+  </div>
+  <div class="inner">
+    <div class="cn-label">第 一 部 分</div>
+    <h2>Company<br>Overview</h2>
+    <div class="rule rule-ember center"></div>
+  </div>
+  <div class="proverb" style="right: 36px; top: 50%; transform: translateY(-50%); font-size: 0.8rem; color: var(--cyan);">千里之行始于足下</div>
+  <span class="sn">02 / 12</span>
+</section>
+
+<!-- SLIDE 3: OVERVIEW -->
+<section class="slide">
+  <div class="crystal-grid"></div>
+  <div class="scanline" style="animation-delay: -3s;"></div>
+  <span class="ghost" style="right: -5%; bottom: -5%; font-size: 32vw; opacity: 0.015;">矿</span>
+  <div class="body">
+    <div class="col col-55">
+      <div class="label">Founded 1986 — Shanghang, Fujian</div>
+      <h2>Provincial Mine<br>to <span class="ember">Global</span> Network</h2>
+      <div class="rule rule-ember"></div>
+      <p class="sub">Zijin's crystalline expansion pattern mirrors the mineral structures it extracts — branching outward along fault lines of geopolitical opportunity.</p>
+      <div class="stat-strip">
+        <div class="stat-cell highlight"><div class="v">$120<span>B</span></div><div class="l">Market Cap</div></div>
+        <div class="stat-cell"><div class="v">73<span>t</span></div><div class="l">Gold / Year</div></div>
+        <div class="stat-cell"><div class="v">1.1<span>Mt</span></div><div class="l">Copper / Year</div></div>
+        <div class="stat-cell"><div class="v">15+</div><div class="l">Countries</div></div>
+      </div>
+    </div>
+    <div class="col col-45" style="align-items: center; justify-content: center;">
+      <svg viewBox="0 0 300 300" fill="none" xmlns="http://www.w3.org/2000/svg" style="max-width:85%;max-height:80%;">
+        <polygon points="150,30 250,80 250,180 150,230 50,180 50,80" stroke="#3ABCC8" stroke-width="0.5" opacity="0.15"/>
+        <polygon points="150,60 220,95 220,165 150,200 80,165 80,95" stroke="#3ABCC8" stroke-width="0.5" opacity="0.1"/>
+        <polygon points="150,90 190,110 190,150 150,170 110,150 110,110" stroke="#E05830" stroke-width="0.5" opacity="0.2"/>
+        <line x1="150" y1="130" x2="150" y2="30" stroke="#3ABCC8" stroke-width="0.3" opacity="0.1"/>
+        <line x1="150" y1="130" x2="250" y2="80" stroke="#3ABCC8" stroke-width="0.3" opacity="0.1"/>
+        <line x1="150" y1="130" x2="250" y2="180" stroke="#3ABCC8" stroke-width="0.3" opacity="0.1"/>
+        <line x1="150" y1="130" x2="150" y2="230" stroke="#3ABCC8" stroke-width="0.3" opacity="0.1"/>
+        <line x1="150" y1="130" x2="50" y2="180" stroke="#3ABCC8" stroke-width="0.3" opacity="0.1"/>
+        <line x1="150" y1="130" x2="50" y2="80" stroke="#3ABCC8" stroke-width="0.3" opacity="0.1"/>
+        <circle cx="150" cy="130" r="4" fill="#E05830"/>
+        <circle cx="150" cy="130" r="10" fill="none" stroke="#E05830" stroke-width="0.5" opacity="0.3">
+          <animate attributeName="r" values="10;16;10" dur="3s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="0.3;0;0.3" dur="3s" repeatCount="indefinite"/>
+        </circle>
+        <text x="150" y="22" text-anchor="middle" fill="#E8E4F0" font-size="6" opacity="0.4" font-family="Space Grotesk">GOLD</text>
+        <text x="260" y="78" text-anchor="start" fill="#E8E4F0" font-size="6" opacity="0.4" font-family="Space Grotesk">COPPER</text>
+        <text x="260" y="185" text-anchor="start" fill="#E8E4F0" font-size="6" opacity="0.4" font-family="Space Grotesk">LITHIUM</text>
+        <text x="150" y="248" text-anchor="middle" fill="#E8E4F0" font-size="6" opacity="0.4" font-family="Space Grotesk">ZINC</text>
+        <text x="40" y="185" text-anchor="end" fill="#E8E4F0" font-size="6" opacity="0.4" font-family="Space Grotesk">COBALT</text>
+        <text x="40" y="78" text-anchor="end" fill="#E8E4F0" font-size="6" opacity="0.4" font-family="Space Grotesk">SILVER</text>
+      </svg>
+    </div>
+  </div>
+  <span class="sn">03 / 12</span>
+</section>
+
+<!-- SLIDE 4: GLOBAL OPERATIONS OPENER -->
+<section class="slide opener">
+  <div class="crystal-grid"></div>
+  <div style="position: absolute; inset: 0; z-index: 0;">
+    <svg viewBox="0 0 1200 600" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;">
+      <polygon points="100,600 250,280 400,400 550,180 700,320 850,140 1000,260 1100,200 1200,280 1200,600" fill="none" stroke="#E05830" stroke-width="0.5" opacity="0.04"/>
+      <polygon points="0,600 150,420 300,480 500,360 700,440 900,360 1100,400 1200,380 1200,600" fill="none" stroke="#3ABCC8" stroke-width="0.3" opacity="0.03"/>
+    </svg>
+  </div>
+  <div class="inner">
+    <div class="cn-label">第 二 部 分</div>
+    <h2>Global<br>Operations</h2>
+    <div class="rule rule-cyan center"></div>
+    <p class="sub" style="margin: 20px auto 0; text-align: center; max-width: 540px; font-size: 0.78rem; letter-spacing: 2px; text-transform: uppercase;">Five regional theatres — scroll onward</p>
+  </div>
+  <div class="proverb" style="right: 36px; top: 50%; transform: translateY(-50%); font-size: 0.8rem; color: var(--ember);">金山银山不如绿水青山</div>
+  <span class="sn">04 / 12</span>
+</section>
+
+<!-- SLIDE 5: CHINA MAP -->
+<section class="slide map-slide" data-region="china">
+  <div class="crystal-grid"></div>
+  <span class="ghost" style="right: -5%; bottom: -12%; font-size: 52vw; opacity: 0.018;">中</span>
+  <div class="glow-line" style="top: 22%; width: 100%;"></div>
+  <div class="glow-line" style="bottom: 22%; width: 100%;"></div>
+  <div class="header">
+    <div class="cn-label">区 域 一 · 中 国</div>
+    <h1>Home <span class="accent">Fortress</span></h1>
+    <div class="rule rule-ember"></div>
+    <div class="sub">Zijin's Domestic Core — 1986 → Present</div>
+  </div>
+  <div class="map-wrap"><svg class="map"></svg></div>
+  <div class="legend">
+    <div class="legend-item"><span class="legend-dot" style="background:var(--ember);color:var(--ember);"></span>Copper</div>
+    <div class="legend-item"><span class="legend-dot" style="background:var(--gold);color:var(--gold);"></span>Gold</div>
+    <div class="legend-item"><span class="legend-dot" style="background:var(--zinc);color:var(--zinc);"></span>Zinc / Poly</div>
+  </div>
+  <div class="info-panel">
+    <span class="close">✕</span>
+    <h3 class="p-type">Asset</h3><h2 class="p-name">—</h2>
+    <div class="country p-cn">中 国</div>
+    <div class="rule-ember"></div>
+    <p class="p-desc">Select a marker.</p>
+    <div class="meta">
+      <div><div class="l">Stake</div><div class="v p-stake">—</div></div>
+      <div><div class="l">Region</div><div class="v p-region">—</div></div>
+      <div><div class="l">Commodity</div><div class="v p-com">—</div></div>
+      <div><div class="l">Status</div><div class="v p-status">—</div></div>
+    </div>
+  </div>
+  <div class="hex-badge-fixed">中</div>
+  <div class="proverb" style="right: 28px; top: 50%; transform: translateY(-50%); font-size: 0.82rem; color: var(--cyan);">根 深 叶 茂 · 本 固 枝 荣</div>
+  <span class="sn">05 / 12 · CHINA</span>
+</section>
+
+<!-- SLIDE 6: EURASIA MAP -->
+<section class="slide map-slide" data-region="eurasia">
+  <div class="crystal-grid"></div>
+  <span class="ghost" style="left: -6%; top: -10%; font-size: 44vw; opacity: 0.015;">欧</span>
+  <span class="ghost" style="right: -6%; bottom: -14%; font-size: 44vw; opacity: 0.015;">亚</span>
+  <div class="glow-line" style="top: 22%; width: 100%;"></div>
+  <div class="glow-line" style="bottom: 22%; width: 100%;"></div>
+  <div class="header">
+    <div class="cn-label">区 域 二 · 欧 亚</div>
+    <h1>The <span class="accent">Silk Corridor</span></h1>
+    <div class="rule rule-ember"></div>
+    <div class="sub">Central Asia · Mongolia · Russian Tuva — BRI / SCO Alignment</div>
+  </div>
+  <div class="map-wrap"><svg class="map"></svg></div>
+  <div class="legend">
+    <div class="legend-item"><span class="legend-dot" style="background:var(--ember);color:var(--ember);"></span>Copper</div>
+    <div class="legend-item"><span class="legend-dot" style="background:var(--gold);color:var(--gold);"></span>Gold</div>
+    <div class="legend-item"><span class="legend-dot" style="background:var(--zinc);color:var(--zinc);"></span>Zinc / Poly</div>
+  </div>
+  <div class="info-panel">
+    <span class="close">✕</span>
+    <h3 class="p-type">Asset</h3><h2 class="p-name">—</h2>
+    <div class="country p-cn">—</div>
+    <div class="rule-ember"></div>
+    <p class="p-desc">Select a marker.</p>
+    <div class="meta">
+      <div><div class="l">Stake</div><div class="v p-stake">—</div></div>
+      <div><div class="l">Country</div><div class="v p-region">—</div></div>
+      <div><div class="l">Commodity</div><div class="v p-com">—</div></div>
+      <div><div class="l">Status</div><div class="v p-status">—</div></div>
+    </div>
+  </div>
+  <div class="hex-badge-fixed">欧亚</div>
+  <div class="proverb" style="right: 28px; top: 50%; transform: translateY(-50%); font-size: 0.82rem; color: var(--cyan);">一 带 一 路 · 丝 绸 之 路</div>
+  <span class="sn">06 / 12 · EURASIA</span>
+</section>
+
+<!-- SLIDE 7: SOUTH AMERICA MAP -->
+<section class="slide map-slide" data-region="samerica">
+  <div class="crystal-grid"></div>
+  <span class="ghost" style="right: -8%; top: -14%; font-size: 50vw; opacity: 0.016;">南</span>
+  <div class="glow-line" style="top: 22%; width: 100%;"></div>
+  <div class="glow-line" style="bottom: 22%; width: 100%;"></div>
+  <div class="header">
+    <div class="cn-label">区 域 三 · 南 美 洲</div>
+    <h1>Countercyclical <span class="accent">Frontier</span></h1>
+    <div class="rule rule-ember"></div>
+    <div class="sub">Andean Gold · Copper · Lithium — Mercosur Entry 2007 → 2025</div>
+  </div>
+  <div class="map-wrap"><svg class="map"></svg></div>
+  <div class="legend">
+    <div class="legend-item"><span class="legend-dot" style="background:var(--ember);color:var(--ember);"></span>Copper</div>
+    <div class="legend-item"><span class="legend-dot" style="background:var(--gold);color:var(--gold);"></span>Gold</div>
+    <div class="legend-item"><span class="legend-dot" style="background:var(--lithium);color:var(--lithium);"></span>Lithium</div>
+  </div>
+  <div class="info-panel">
+    <span class="close">✕</span>
+    <h3 class="p-type">Asset</h3><h2 class="p-name">—</h2>
+    <div class="country p-cn">—</div>
+    <div class="rule-ember"></div>
+    <p class="p-desc">Select a marker.</p>
+    <div class="meta">
+      <div><div class="l">Stake</div><div class="v p-stake">—</div></div>
+      <div><div class="l">Country</div><div class="v p-region">—</div></div>
+      <div><div class="l">Commodity</div><div class="v p-com">—</div></div>
+      <div><div class="l">Status</div><div class="v p-status">—</div></div>
+    </div>
+  </div>
+  <div class="hex-badge-fixed">南美</div>
+  <div class="proverb" style="right: 28px; top: 50%; transform: translateY(-50%); font-size: 0.82rem; color: var(--cyan);">危 机 之 中 · 必 有 机 遇</div>
+  <span class="sn">07 / 12 · SOUTH AMERICA</span>
+</section>
+
+<!-- SLIDE 8: AFRICA MAP -->
+<section class="slide map-slide" data-region="africa">
+  <div class="crystal-grid"></div>
+  <span class="ghost" style="left: -7%; bottom: -12%; font-size: 50vw; opacity: 0.016;">非</span>
+  <div class="glow-line" style="top: 22%; width: 100%;"></div>
+  <div class="glow-line" style="bottom: 22%; width: 100%;"></div>
+  <div class="header">
+    <div class="cn-label">区 域 四 · 非 洲</div>
+    <h1>The <span class="accent">Copperbelt</span></h1>
+    <div class="rule rule-ember"></div>
+    <div class="sub">Sub-Saharan Resource Frontier — Kamoa-Kakula Anchors the Portfolio</div>
+  </div>
+  <div class="map-wrap"><svg class="map"></svg></div>
+  <div class="legend">
+    <div class="legend-item"><span class="legend-dot" style="background:var(--ember);color:var(--ember);"></span>Copper</div>
+    <div class="legend-item"><span class="legend-dot" style="background:var(--gold);color:var(--gold);"></span>Gold</div>
+    <div class="legend-item"><span class="legend-dot" style="background:var(--zinc);color:var(--zinc);"></span>Zinc / Poly</div>
+  </div>
+  <div class="info-panel">
+    <span class="close">✕</span>
+    <h3 class="p-type">Asset</h3><h2 class="p-name">—</h2>
+    <div class="country p-cn">—</div>
+    <div class="rule-ember"></div>
+    <p class="p-desc">Select a marker.</p>
+    <div class="meta">
+      <div><div class="l">Stake</div><div class="v p-stake">—</div></div>
+      <div><div class="l">Country</div><div class="v p-region">—</div></div>
+      <div><div class="l">Commodity</div><div class="v p-com">—</div></div>
+      <div><div class="l">Status</div><div class="v p-status">—</div></div>
+    </div>
+  </div>
+  <div class="hex-badge-fixed">非洲</div>
+  <div class="proverb" style="right: 28px; top: 50%; transform: translateY(-50%); font-size: 0.82rem; color: var(--cyan);">矿 山 之 脉 · 通 达 天 下</div>
+  <span class="sn">08 / 12 · AFRICA</span>
+</section>
+
+<!-- SLIDE 9: EUROPE + OCEANIA -->
+<section class="slide map-slide" data-region="eu-oc">
+  <div class="crystal-grid"></div>
+  <span class="ghost" style="left: 12%; top: -10%; font-size: 32vw; opacity: 0.013;">欧</span>
+  <span class="ghost" style="right: 12%; bottom: -12%; font-size: 32vw; opacity: 0.013;">洋</span>
+  <div class="glow-line" style="top: 22%; width: 100%;"></div>
+  <div class="glow-line" style="bottom: 22%; width: 100%;"></div>
+  <div class="header">
+    <div class="cn-label">区 域 五 · 欧 洲 与 大 洋 洲</div>
+    <h1>The <span class="accent">Regulatory Ceiling</span></h1>
+    <div class="rule rule-ember"></div>
+    <div class="sub">Serbia (EU Accession) ↔ Australia (FIRB) — Western Institutional Friction</div>
+  </div>
+  <div class="split">
+    <div class="pane pane-left">
+      <div class="pane-label">欧 洲<span class="en">Europe</span></div>
+      <svg class="map-eu"></svg>
+    </div>
+    <div class="pane pane-right">
+      <div class="pane-label">大 洋 洲<span class="en">Oceania</span></div>
+      <svg class="map-oc"></svg>
+    </div>
+  </div>
+  <div class="divider"></div>
+  <div class="contrast-note">Serbia ⟶ <span class="accent">accommodating hybrid state</span> &nbsp;·&nbsp; Australia ⟶ <span class="accent">FIRB / CFIUS resistance</span></div>
+  <div class="legend center">
+    <div class="legend-item"><span class="legend-dot" style="background:var(--ember);color:var(--ember);"></span>Copper</div>
+    <div class="legend-item"><span class="legend-dot" style="background:var(--gold);color:var(--gold);"></span>Gold</div>
+  </div>
+  <div class="info-panel">
+    <span class="close">✕</span>
+    <h3 class="p-type">Asset</h3><h2 class="p-name">—</h2>
+    <div class="country p-cn">—</div>
+    <div class="rule-ember"></div>
+    <p class="p-desc">Select a marker.</p>
+    <div class="meta">
+      <div><div class="l">Stake</div><div class="v p-stake">—</div></div>
+      <div><div class="l">Country</div><div class="v p-region">—</div></div>
+      <div><div class="l">Commodity</div><div class="v p-com">—</div></div>
+      <div><div class="l">Status</div><div class="v p-status">—</div></div>
+    </div>
+  </div>
+  <div class="hex-badge-fixed">西境</div>
+  <span class="sn">09 / 12 · EUROPE & OCEANIA</span>
+</section>
+
+<!-- SLIDE 10: STRATEGY OPENER -->
+<section class="slide opener">
+  <div class="crystal-grid"></div>
+  <div style="position: absolute; inset: 0; z-index: 0;">
+    <svg viewBox="0 0 1200 600" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;">
+      <polygon points="0,500 200,250 400,380 600,120 800,300 1000,80 1200,200 1200,600 0,600" fill="none" stroke="#E8E4F0" stroke-width="0.3" opacity="0.03"/>
+    </svg>
+  </div>
+  <div class="inner">
+    <div class="cn-label">第 三 部 分</div>
+    <h2>Geostrategic<br>Analysis</h2>
+    <div class="rule rule-ember center"></div>
+  </div>
+  <div class="proverb" style="right: 36px; top: 50%; transform: translateY(-50%); font-size: 0.8rem; color: var(--cyan);">运筹帷幄决胜千里</div>
+  <span class="sn">10 / 12</span>
+</section>
+
+<!-- SLIDE 11: STRATEGY -->
+<section class="slide">
+  <div class="crystal-grid"></div>
+  <div class="scanline" style="animation-delay: -5s;"></div>
+  <span class="ghost" style="right: -4%; top: 50%; transform: translateY(-50%); font-size: 28vw; opacity: 0.012;">战</span>
+  <div class="body">
+    <div class="col col-55">
+      <div class="label">Party-State Nexus</div>
+      <h2>The <span class="ember">Architecture</span><br>of Control</h2>
+      <div class="rule rule-ember"></div>
+      <p class="sub" style="margin-bottom: 20px;">Party-state capitalism compresses patient capital, diplomatic reach, and risk tolerance into a single operating system. Each node of the portfolio is commercially independent yet structurally aligned to Beijing's strategic coordinates.</p>
+      <div class="card-grid card-grid-2">
+        <div class="c-card"><h3>Dual Governance</h3><p>CCP committee inside the board; personnel run through the Party's Organisation Department.</p></div>
+        <div class="c-card"><h3>Policy-Bank Credit</h3><p>CDB &amp; Exim Bank at preferential rates — de facto acquisition subsidies on every deal.</p></div>
+        <div class="c-card"><h3>Countercyclical Buying</h3><p>Monterrico 2007 · Buriticá / Rosebel (COVID) · Tuva + Argentina lithium (2025).</p></div>
+        <div class="c-card"><h3>Western Ceiling</h3><p>UFLPA list · FIRB · CFIUS · CSDDD — OECD capital markets closing to SOE-adjacent capital.</p></div>
+      </div>
+    </div>
+    <div class="col col-45" style="align-items: center; justify-content: center;">
+      <div style="font-family: 'Noto Serif SC', serif; font-size: 3.5rem; color: var(--ember); opacity: 0.06; writing-mode: vertical-rl; letter-spacing: 20px; line-height: 1.5;">国家战略资源</div>
+    </div>
+  </div>
+  <span class="sn">11 / 12</span>
+</section>
+
+<!-- SLIDE 12: CONCLUSION -->
+<section class="slide">
+  <div class="crystal-grid"></div>
+  <div class="scanline" style="animation-delay: -1s;"></div>
+  <span class="ghost" style="left: 50%; top: 48%; transform: translate(-50%, -50%); font-size: 48vw; opacity: 0.01;">龙</span>
+  <div class="glow-line" style="top: 35%; left: 0; width: 100%; opacity: 0.04;"></div>
+  <div class="glow-line" style="top: 65%; left: 0; width: 100%; opacity: 0.04;"></div>
+  <div class="center-content">
+    <div style="font-family: 'Noto Serif SC', serif; font-weight: 200; font-size: 0.85rem; color: var(--cyan); letter-spacing: 8px; margin-bottom: 16px; opacity: 0.5;">结 论</div>
+    <h1 style="font-size: 4rem;">Crystal<br><span class="ember">Dragon</span></h1>
+    <div class="rule rule-ember center"></div>
+    <p class="sub" style="text-align: center; max-width: 580px;">State backing still helps more than it constrains, but the margin is narrowing. Zijin will dominate the frontier-mining tier and supply China's transition-minerals machine — but the institutional architecture that gives it its floor also sets its ceiling.</p>
+    <div style="margin-top: 40px;"><div class="hex-badge" style="margin: 0 auto;">紫金</div></div>
+    <div style="margin-top: 20px; font-size: 0.55rem; opacity: 0.18; letter-spacing: 3px;">KEDGE BUSINESS SCHOOL — 谢谢</div>
+  </div>
+  <div class="proverb" style="right: 36px; top: 50%; transform: translateY(-50%); font-size: 0.8rem; color: var(--ember); opacity: 0.08;">龙行天下</div>
+  <span class="sn">12 / 12</span>
+</section>
+
+<div class="nav-hint">Scroll to navigate · 12 slides</div>
+
+<script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+<script src="https://cdn.jsdelivr.net/npm/topojson-client@3"></script>
+<script>
+const DATA = {
+  china: {
+    focus: new Set(["China"]),
+    proj: () => d3.geoConicConformal().parallels([25,47]).rotate([-105,0]).center([0,35]),
+    scaleMul: 1.2,
+    ops: [
+      { name:"Zijinshan", cn:"紫金山", country:"China", region:"Fujian (HQ)", lat:25.05, lon:116.42, type:"gold", commodity:"Gold + Copper", stake:"100%", status:"Operational — flagship", desc:"Founding mine and corporate HQ. The Zijinshan polymetallic complex in Shanghang county launched Zijin's trajectory from a loss-making provincial gold mine in 1993 to the world's largest gold-copper major by 2025." },
+      { name:"Julong Copper", cn:"巨龙铜矿", country:"China", region:"Tibet", lat:29.72, lon:91.83, type:"copper", commodity:"Copper", stake:"50.1%", status:"Phase II expansion", desc:"Highest-altitude operating copper mine in the world. Phase II expansion will triple throughput by 2026, making Julong the largest single copper mine in China." },
+      { name:"Ashele", cn:"阿舍勒", country:"China", region:"Xinjiang", lat:48.06, lon:86.41, type:"copper", commodity:"Copper + Zinc", stake:"51%", status:"Operational", desc:"Polymetallic VMS deposit in the Altay mountains. Strategic Xinjiang footprint aligning with BRI transit corridors to Central Asia." },
+      { name:"Wulatehouqi", cn:"乌拉特后旗", country:"China", region:"Inner Mongolia", lat:41.5, lon:108.5, type:"zinc", commodity:"Zinc + Lead", stake:"95%", status:"Operational", desc:"Large-scale zinc-lead deposit feeding Zijin's integrated smelter network across northern China." },
+      { name:"Duobaoshan", cn:"多宝山", country:"China", region:"Heilongjiang", lat:50.2, lon:125.75, type:"copper", commodity:"Copper + Moly", stake:"100%", status:"Operational", desc:"Porphyry copper-molybdenum deposit on the Sino-Russian border. Long-lived, low-grade, high-volume asset feeding the northeastern smelter belt." },
+      { name:"Shuiyindong", cn:"水银洞", country:"China", region:"Guizhou", lat:25.4, lon:105.6, type:"gold", commodity:"Carlin-type Gold", stake:"100%", status:"Operational", desc:"Southwest China's most significant Carlin-type gold orebody. Refractory ore processed via pressure oxidation — Zijin's technical specialty." },
+      { name:"Luoning Gold", cn:"洛宁金矿", country:"China", region:"Henan", lat:34.4, lon:111.6, type:"gold", commodity:"Gold", stake:"100%", status:"Operational", desc:"Central China gold district. Consolidated under Zijin through acquisition of scattered private operators in the late 2000s." }
+    ]
+  },
+  eurasia: {
+    focus: new Set(["Kyrgyzstan","Tajikistan","Kazakhstan","Uzbekistan","Turkmenistan","Mongolia","Russia","Afghanistan","China","Iran","Azerbaijan","Armenia","Georgia"]),
+    proj: () => d3.geoConicConformal().parallels([35,55]).rotate([-80,0]).center([0,47]),
+    scaleMul: 1.15,
+    ops: [
+      { name:"Taldybulak Levoberezhny", cn:"塔尔德布拉克", country:"Kyrgyzstan", region:"Kyrgyzstan", lat:42.73, lon:74.62, type:"gold", commodity:"Gold", stake:"60%", status:"Operational — community tensions", desc:"Zijin's first major Central Asian foothold. JV with Kyrgyzaltyn; episodic protests and contract-review pressure reflect the region's rising resource-nationalism environment.", off:[10,-8] },
+      { name:"Zeravshan", cn:"泽拉夫尚", country:"Tajikistan", region:"Tajikistan", lat:39.48, lon:68.78, type:"gold", commodity:"Gold", stake:"75%", status:"Operational", desc:"JV with the Tajik state. A keystone of Zijin's Central Asian gold corridor; SCO-aligned and CDB-financed expansion of Jilau and Taror deposits.", off:[10,8] },
+      { name:"Kyzyl-Tashtyg", cn:"克孜勒-塔什特格", country:"Russia", region:"Tuva, Russia", lat:50.87, lon:95.25, type:"zinc", commodity:"Zinc-rich Polymetallic", stake:"70%", status:"Operational — lithium pivot 2025", desc:"Underground VMS polymetallic mine in Russia's Tuva republic. Recently repositioned alongside Zijin's 2025 lithium scale-up in the Siberian brine-pegmatite belt.", off:[10,-8] },
+      { name:"Raygorodok Bid", cn:"雷戈罗多克", country:"Kazakhstan", region:"Kazakhstan", lat:50.40, lon:72.20, type:"gold", commodity:"Gold", stake:"Bid / Exploration", status:"Under negotiation", desc:"Entry attempt into Kazakhstan's gold sector — tests Zijin's ability to compete with domestic oligarchic holdings under Astana's post-2022 FDI rebalancing.", off:[10,8] },
+      { name:"Mongolia Exploration", cn:"蒙古勘探", country:"Mongolia", region:"Mongolia", lat:47.0, lon:106.9, type:"copper", commodity:"Copper prospects", stake:"Exploration", status:"Early stage", desc:"Exploration acreage adjacent to the Oyu Tolgoi porphyry belt. Strategic hedge via SCO pathway; constrained by Rio Tinto's incumbent position.", off:[10,-8] }
+    ]
+  },
+  samerica: {
+    focus: new Set(["Colombia","Peru","Suriname","Guyana","Argentina","Brazil","Ecuador","Bolivia","Chile","Venezuela","Paraguay","Uruguay","French Guiana","Panama"]),
+    proj: () => d3.geoConicEqualArea().parallels([-8,-32]).rotate([62,0]).center([0,-15]),
+    scaleMul: 1.4,
+    offY: 20, offX: 40,
+    ops: [
+      { name:"Buriticá", cn:"布里蒂卡", country:"Colombia", region:"Antioquia, Colombia", lat:6.72, lon:-75.91, type:"gold", commodity:"Gold", stake:"100%", status:"Operational — security crisis", desc:"$1.4B Continental Gold acquisition (2020). High-grade underground mine facing severe illegal-mining incursions and Clan del Golfo armed-group pressure — emblematic of Zijin's exposure to Andean frontier security risk.", off:[10,-8] },
+      { name:"Rosebel", cn:"罗斯贝尔", country:"Suriname", region:"Brokopondo, Suriname", lat:5.1, lon:-55.15, type:"gold", commodity:"Gold", stake:"95%", status:"Operational — restart", desc:"Acquired 95% of Rosebel Gold Mines N.V. from IAMGOLD in 2023. Classic COVID-era countercyclical move: bought distressed majors' non-core gold assets at trough valuations.", off:[10,8] },
+      { name:"Guyana Exploration", cn:"圭亚那勘探", country:"Guyana", region:"Guyana", lat:6.0, lon:-58.5, type:"gold", commodity:"Gold", stake:"JV / Exploration", status:"Early stage", desc:"Exploration foothold on the Guiana Shield. Tests entry into Guyana's post-ExxonMobil resource-rush regulatory environment.", off:[12,-8] },
+      { name:"Río Blanco", cn:"里奥布兰科", country:"Peru", region:"Piura, Peru", lat:-5.06, lon:-79.22, type:"copper", commodity:"Copper + Moly", stake:"Consortium", status:"Pre-development — stalled", desc:"Original 2007 Monterrico Metals acquisition — Zijin's first Latin American move. Community opposition from Huancabamba and Ayabaca has kept the deposit in pre-development limbo for 15+ years.", off:[-160,-8] },
+      { name:"Tres Quebradas (3Q)", cn:"三泉锂盐湖", country:"Argentina", region:"Catamarca, Argentina", lat:-26.93, lon:-68.62, type:"lithium", commodity:"Lithium brine", stake:"100%", status:"Production ramp 2025", desc:"Liontown Resources / Neo Lithium-origin salar. Feeds the Chinese cathode and EV supply chain; cornerstone of Zijin's 2025 lithium scale-up.", off:[10,8] }
+    ]
+  },
+  africa: {
+    focus: new Set(["Dem. Rep. Congo","Ghana","Eritrea","South Africa","Nigeria","Kenya","Tanzania","Ethiopia","Sudan","South Sudan","Angola","Zambia","Zimbabwe","Mozambique","Namibia","Botswana","Madagascar","Chad","Niger","Mali","Algeria","Libya","Egypt","Morocco","Mauritania","Senegal","Cameroon","Uganda","Somalia","Central African Rep.","Burkina Faso","Guinea","Côte d'Ivoire","Benin","Togo","Liberia","Sierra Leone","Gabon","Eq. Guinea","Rep. Congo","Malawi","Lesotho","Swaziland","Burundi","Rwanda","Djibouti","W. Sahara","Tunisia"]),
+    proj: () => d3.geoMercator().center([20,2]),
+    scaleMul: 0.95,
+    ops: [
+      { name:"Kamoa-Kakula", cn:"卡莫阿-卡库拉", country:"Dem. Rep. Congo", region:"Lualaba, DRC", lat:-10.75, lon:25.26, type:"copper", commodity:"Copper", stake:"39.6%", status:"Operational — Phase III", desc:"World's fourth-largest copper complex. JV with Ivanhoe Mines and the DRC government; phased expansion makes Kamoa-Kakula the single largest copper asset in Zijin's global portfolio.", off:[10,-8] },
+      { name:"Akyem Gold", cn:"阿基姆金矿", country:"Ghana", region:"Eastern Region, Ghana", lat:6.25, lon:-1.03, type:"gold", commodity:"Gold", stake:"100%", status:"Acquired 2024–25", desc:"Acquired from Newmont in Zijin's largest West African move. Consolidates its gold posture under rising Ghanaian royalty pressure and OECD-miner divestment from the region.", off:[-160,-8] },
+      { name:"Bisha", cn:"比沙", country:"Eritrea", region:"Gash-Barka, Eritrea", lat:15.73, lon:37.48, type:"zinc", commodity:"Copper-Zinc", stake:"55%", status:"Operational", desc:"Inherited from the 2018 Nevsun Resources acquisition. The Timok (Serbia) and Bisha (Eritrea) assets both came in that deal — one of Zijin's most consequential single transactions.", off:[10,8] },
+      { name:"South Africa Office", cn:"南非办事处", country:"South Africa", region:"Gauteng, South Africa", lat:-26.20, lon:28.05, type:"gold", commodity:"Regional HQ", stake:"Regional office", status:"Active", desc:"Regional coordination hub for Sub-Saharan portfolio management and ongoing M&A scanning in the Southern African Development Community (SADC).", off:[10,-8] }
+    ]
+  }
+};
+
+const EU_DATA = {
+  focus: new Set(["Serbia","Croatia","Slovenia","Hungary","Romania","Bulgaria","Bosnia and Herz.","Montenegro","Kosovo","Albania","North Macedonia","Greece","Austria","Slovakia","Czechia","Poland","Germany","France","Italy","Spain","Portugal","United Kingdom","Ireland","Netherlands","Belgium","Denmark","Sweden","Norway","Finland","Estonia","Latvia","Lithuania","Belarus","Ukraine","Moldova","Turkey","Switzerland"]),
+  ops: [
+    { name:"Timok Copper–Gold", cn:"蒂莫克", country:"Serbia", region:"Bor District, Serbia", lat:44.07, lon:22.09, type:"copper", commodity:"Copper + Gold", stake:"100% (upper zone)", status:"Operational + expansion", desc:"Acquired through the 2018 Nevsun Resources deal and complemented by the 2018 RTB Bor purchase. Serbia's accommodating regulatory environment and EU-accession aspirations make it Zijin's most strategically nuanced European foothold — a Western-aligned state still open to Chinese capital.", off:[10,-8] }
+  ]
+};
+const OC_DATA = {
+  focus: new Set(["Australia","Papua New Guinea","New Zealand","Indonesia","Solomon Is.","Fiji","Vanuatu","Timor-Leste","New Caledonia","Philippines"]),
+  ops: [
+    { name:"Norton Gold Fields", cn:"诺顿金田", country:"Australia", region:"Kalgoorlie, WA", lat:-30.75, lon:121.47, type:"gold", commodity:"Gold", stake:"100%", status:"Operational — FIRB scrutinised", desc:"Zijin's earliest major OECD acquisition (2012). Subsequent expansion attempts have faced recurring FIRB review, foreshadowing the broader CFIUS / CSDDD regulatory wall now closing OECD jurisdictions to Chinese SOE capital.", off:[10,-8] },
+    { name:"Porgera JV", cn:"波格拉", country:"Papua New Guinea", region:"Enga, PNG", lat:-5.47, lon:143.14, type:"gold", commodity:"Gold", stake:"24.5% (New Porgera)", status:"Restarted 2023 JV", desc:"Tripartite restart with Barrick Gold and the PNG state after the landowner-mandated 2020 closure. A case study in how Zijin negotiates around resource-nationalism-driven mine takeovers.", off:[10,-8] }
+  ]
+};
+
+const WORLD_URL = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json";
+let WORLD = null;
+
+function showPanel(section, d) {
+  const p = section.querySelector(".info-panel");
+  p.classList.add("show");
+  p.querySelector(".p-name").textContent = d.name;
+  p.querySelector(".p-cn").textContent = d.cn;
+  p.querySelector(".p-desc").textContent = d.desc;
+  p.querySelector(".p-stake").textContent = d.stake;
+  p.querySelector(".p-region").textContent = d.country;
+  p.querySelector(".p-com").textContent = d.commodity;
+  p.querySelector(".p-status").textContent = d.status;
+  p.querySelector(".p-type").textContent = d.type.toUpperCase() + " ASSET";
+}
+
+function buildMap(section, svgEl, cfg) {
+  const svg = d3.select(svgEl);
+  const rect = svgEl.getBoundingClientRect();
+  const w = rect.width, h = rect.height;
+  if (!w || !h) return;
+  svg.attr("viewBox", `0 0 ${w} ${h}`);
+  svg.selectAll("*").remove();
+
+  const projection = cfg.proj()
+    .scale(Math.min(w, h) * (cfg.scaleMul || 1))
+    .translate([w/2 + (cfg.offX || 0), h/2 + (cfg.offY || 0)]);
+  const path = d3.geoPath(projection);
+
+  svg.append("path").datum(d3.geoGraticule().step([10,10])).attr("class","graticule").attr("d", path);
+
+  const countries = topojson.feature(WORLD, WORLD.objects.countries);
+  svg.append("g").selectAll("path").data(countries.features).enter().append("path")
+    .attr("class", d => cfg.focus.has(d.properties.name) ? "land focus" : "land")
+    .attr("d", path).attr("data-name", d => d.properties.name);
+  svg.append("path").datum(topojson.mesh(WORLD, WORLD.objects.countries, (a,b) => a !== b)).attr("class","border").attr("d", path);
+
+  const g = svg.append("g");
+  const nodes = g.selectAll("g.op").data(cfg.ops).enter().append("g")
+    .attr("class", d => `op ${d.type}`)
+    .attr("transform", d => `translate(${projection([d.lon, d.lat])})`)
+    .on("mouseover", function(e,d) { svg.selectAll(".land").classed("hover", p => p.properties.name === d.country); })
+    .on("mouseout", () => svg.selectAll(".land").classed("hover", false))
+    .on("click", (e,d) => showPanel(section, d));
+  nodes.append("circle").attr("class","pulse").attr("r",6);
+  nodes.append("circle").attr("class","dot").attr("r",4.5);
+  nodes.each(function(d) {
+    const [ox, oy] = d.off || [10,-8];
+    const textLen = d.name.length * 6.2 + 20;
+    const g2 = d3.select(this);
+    g2.append("rect").attr("class","label-bg").attr("x", ox).attr("y", oy-10).attr("width", textLen).attr("height", 22).attr("rx",1);
+    g2.append("text").attr("class","label-txt").attr("x", ox+8).attr("y", oy+2).text(d.name);
+    g2.append("text").attr("class","label-meta").attr("x", ox+8).attr("y", oy+10).text(d.region);
+  });
+}
+
+function initAll() {
+  ["china","eurasia","samerica","africa"].forEach(key => {
+    const section = document.querySelector(`section[data-region="${key}"]`);
+    const svgEl = section.querySelector("svg.map");
+    buildMap(section, svgEl, DATA[key]);
+  });
+  const euSection = document.querySelector('section[data-region="eu-oc"]');
+  buildMap(euSection, euSection.querySelector("svg.map-eu"), {
+    focus: EU_DATA.focus, ops: EU_DATA.ops,
+    proj: () => d3.geoConicConformal().parallels([40,55]).rotate([-15,0]).center([0,50]),
+    scaleMul: 1.1
+  });
+  buildMap(euSection, euSection.querySelector("svg.map-oc"), {
+    focus: OC_DATA.focus, ops: OC_DATA.ops,
+    proj: () => d3.geoMercator().center([140,-20]),
+    scaleMul: 0.75
+  });
+
+  // close handlers
+  document.querySelectorAll(".info-panel .close").forEach(el => {
+    el.addEventListener("click", () => el.closest(".info-panel").classList.remove("show"));
+  });
+}
+
+d3.json(WORLD_URL).then(data => { WORLD = data; initAll(); });
+window.addEventListener("resize", () => { if (WORLD) initAll(); });
+</script>
+</body>
+</html>

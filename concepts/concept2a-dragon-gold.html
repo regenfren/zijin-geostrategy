@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zijin — Dragon Vein: Gold Variant 龙脉·金</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;600;700;800;900&family=Noto+Serif+SC:wght@200;400;700;900&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --base: #110E1F;
+    --base-mid: #1A1630;
+    --base-light: #252040;
+    --gold: #C4A24E;
+    --gold-bright: #E0C060;
+    --gold-dim: rgba(196, 162, 78, 0.12);
+    --jade: #6B9E88;
+    --jade-dim: rgba(107, 158, 136, 0.3);
+    --parchment: #EDE6D8;
+    --parchment-dim: rgba(237, 230, 216, 0.45);
+  }
+
+  html { font-size: 16px; scroll-behavior: smooth; }
+  body { background: var(--base); color: var(--parchment); font-family: 'Outfit', sans-serif; overflow-x: hidden; }
+
+  .slide { width: 100vw; height: 100vh; position: relative; overflow: hidden; display: flex; }
+
+  /* --- ANIMATED GOLD GRAIN TEXTURE --- */
+  .grain {
+    position: absolute; inset: 0; z-index: 0; opacity: 0.015; pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* --- GHOST CHARACTERS --- */
+  .ghost { font-family: 'Noto Serif SC', serif; font-weight: 900; color: var(--gold); opacity: 0.04; position: absolute; user-select: none; pointer-events: none; z-index: 1; line-height: 0.85; }
+
+  /* --- SCROLL OPENER --- */
+  .scroll-opener {
+    width: 100vw; height: 100vh; position: relative; overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(180deg, var(--base) 0%, #0D0B18 100%);
+  }
+  .scroll-opener .mountains { position: absolute; inset: 0; z-index: 0; }
+  .scroll-opener .mountains svg { width: 100%; height: 100%; }
+  .scroll-opener .inner { position: relative; z-index: 2; text-align: center; }
+  .scroll-opener h2 { font-weight: 800; font-size: 3.2rem; letter-spacing: -1px; margin-bottom: 6px; }
+  .scroll-opener .cn-label { font-family: 'Noto Serif SC', serif; font-weight: 200; font-size: 0.9rem; color: var(--gold); letter-spacing: 8px; }
+
+  /* --- PROVERB --- */
+  .proverb {
+    position: absolute; right: 36px; top: 50%; transform: translateY(-50%);
+    writing-mode: vertical-rl; font-family: 'Noto Serif SC', serif; font-weight: 200;
+    font-size: 0.8rem; color: var(--gold); opacity: 0.2; letter-spacing: 10px; z-index: 3;
+  }
+
+  /* --- FLOATING GOLD ORB --- */
+  .gold-orb {
+    width: 300px; height: 300px; border-radius: 50%; position: absolute;
+    background: radial-gradient(circle at 35% 35%, var(--gold-bright), var(--gold), rgba(196, 162, 78, 0.1), transparent);
+    opacity: 0.06; filter: blur(40px); z-index: 0; pointer-events: none;
+  }
+
+  /* --- CONTENT --- */
+  .slide-body { padding: 70px 80px; display: flex; flex-direction: column; justify-content: center; position: relative; z-index: 2; }
+  .slide-body.left { max-width: 60%; }
+  .slide-body.right { margin-left: auto; max-width: 55%; text-align: right; align-items: flex-end; }
+  .slide-body.center { width: 100%; align-items: center; text-align: center; }
+
+  .label { font-size: 0.62rem; letter-spacing: 5px; text-transform: uppercase; color: var(--gold); margin-bottom: 14px; font-weight: 600; }
+  h1 { font-weight: 900; font-size: 5.5rem; line-height: 0.92; letter-spacing: -3px; margin-bottom: 16px; }
+  h2 { font-weight: 700; font-size: 2.8rem; line-height: 1.05; letter-spacing: -1px; margin-bottom: 14px; }
+  h3 { font-weight: 600; font-size: 0.7rem; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 10px; }
+  .sub { font-size: 1rem; color: var(--parchment-dim); font-weight: 200; line-height: 1.75; max-width: 500px; }
+  .gold-text { color: var(--gold); }
+  .jade-text { color: var(--jade); }
+
+  .gold-rule { width: 48px; height: 2px; background: var(--gold); margin: 18px 0; }
+  .gold-rule.center { margin: 18px auto; }
+  .gold-rule.right { margin-left: auto; }
+
+  /* --- HORIZONTAL GOLD BORDER --- */
+  .gold-border-bottom { position: absolute; bottom: 0; left: 0; width: 100%; height: 1px; background: linear-gradient(90deg, transparent, var(--gold), transparent); opacity: 0.12; z-index: 5; }
+
+  /* --- DATA --- */
+  .stat-row { display: flex; gap: 48px; margin-top: 28px; }
+  .stat-row.right { justify-content: flex-end; }
+  .stat .val { font-size: 2.4rem; font-weight: 800; color: var(--gold); line-height: 1; }
+  .stat .lbl { font-size: 0.6rem; letter-spacing: 2px; text-transform: uppercase; color: var(--jade); margin-top: 4px; }
+
+  /* --- CARDS --- */
+  .card-grid { display: grid; gap: 16px; margin-top: 20px; }
+  .card-grid-2 { grid-template-columns: 1fr 1fr; }
+  .card {
+    border: 1px solid var(--gold-dim); padding: 24px; position: relative;
+    background: linear-gradient(135deg, rgba(196, 162, 78, 0.03), transparent);
+  }
+  .card p { font-size: 0.85rem; font-weight: 200; color: var(--parchment-dim); line-height: 1.7; }
+
+  /* --- LIST --- */
+  .items { list-style: none; margin-top: 10px; }
+  .items li {
+    padding: 12px 0; border-bottom: 1px solid rgba(196, 162, 78, 0.08);
+    font-size: 0.88rem; font-weight: 200; line-height: 1.7; color: var(--parchment-dim);
+    display: flex; gap: 14px; align-items: flex-start;
+  }
+  .items li::before { content: ''; width: 5px; height: 5px; border: 1px solid var(--gold); flex-shrink: 0; margin-top: 8px; transform: rotate(45deg); }
+  .items.right li { flex-direction: row-reverse; }
+  .items.right li::before { margin-top: 8px; }
+
+  /* --- CIRCULAR DIAGRAM --- */
+  .ring-diagram { position: relative; width: 200px; height: 200px; }
+  .ring-diagram svg { width: 100%; height: 100%; }
+  .ring-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; }
+  .ring-center .val { font-size: 1.6rem; font-weight: 800; color: var(--gold); }
+  .ring-center .lbl { font-size: 0.55rem; letter-spacing: 2px; text-transform: uppercase; color: var(--parchment-dim); }
+
+  /* --- SLIDE NUM --- */
+  .sn { position: absolute; bottom: 28px; left: 80px; font-size: 0.6rem; letter-spacing: 3px; color: var(--gold); opacity: 0.2; z-index: 10; }
+
+  /* --- VERTICAL GOLD ACCENT --- */
+  .v-gold { position: absolute; left: 0; top: 0; width: 2px; height: 100%; background: linear-gradient(180deg, transparent 15%, var(--gold) 50%, transparent 85%); opacity: 0.1; z-index: 5; }
+
+  .nav-hint { position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); font-size: 0.55rem; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); opacity: 0.15; z-index: 100; }
+</style>
+</head>
+<body>
+
+<!-- SLIDE 1: TITLE -->
+<section class="slide">
+  <div class="grain"></div>
+  <span class="ghost" style="left: -6%; top: 50%; transform: translateY(-50%); font-size: 50vw; opacity: 0.025;">紫</span>
+  <span class="ghost" style="right: -10%; top: 50%; transform: translateY(-50%); font-size: 42vw; opacity: 0.02;">金</span>
+  <div class="gold-orb" style="top: 20%; right: 15%;"></div>
+  <div class="gold-orb" style="bottom: 10%; left: 10%; width: 200px; height: 200px;"></div>
+  <div class="slide-body center">
+    <div class="label" style="letter-spacing: 8px;">Geostrategy — KEDGE 2026</div>
+    <h1>ZIJIN<br><span class="gold-text">MINING</span></h1>
+    <div style="font-family: 'Noto Serif SC', serif; font-weight: 200; font-size: 1.4rem; color: var(--jade); letter-spacing: 16px; margin-bottom: 28px;">紫 金 矿 业</div>
+    <div class="gold-rule center"></div>
+    <p class="sub" style="text-align: center;">
+      Dragon veins of copper and gold — tracing China's<br>resource empire across continents
+    </p>
+    <div style="margin-top: 52px; display: flex; gap: 24px; align-items: center; font-size: 0.65rem; opacity: 0.25; letter-spacing: 3px;">
+      <span style="font-family: 'Noto Serif SC', serif;">龙脉 · 金</span>
+      <span>DRAGON VEIN — GOLD</span>
+    </div>
+  </div>
+  <div class="gold-border-bottom"></div>
+  <span class="sn">01 / 08</span>
+</section>
+
+<!-- SLIDE 2: SECTION OPENER — OVERVIEW -->
+<section class="scroll-opener">
+  <div class="mountains">
+    <svg viewBox="0 0 1200 600" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0 600 L0 380 Q100 280 220 350 Q320 220 460 310 Q560 170 680 270 Q780 180 880 240 Q980 170 1080 210 Q1140 190 1200 220 L1200 600 Z" fill="#C4A24E" opacity="0.07"/>
+      <path d="M0 600 L0 440 Q160 370 320 410 Q440 340 560 390 Q680 310 800 360 Q920 300 1040 330 Q1120 310 1200 340 L1200 600 Z" fill="#C4A24E" opacity="0.035"/>
+      <path d="M0 600 L0 500 Q250 460 500 480 Q650 450 800 470 Q950 445 1100 460 L1200 470 L1200 600 Z" fill="#6B9E88" opacity="0.03"/>
+    </svg>
+  </div>
+  <div class="inner">
+    <div class="cn-label">第 一 部 分</div>
+    <h2>Company<br>Overview</h2>
+    <div class="gold-rule center"></div>
+  </div>
+  <div class="proverb">千里之行始于足下</div>
+  <span class="sn">02 / 08</span>
+</section>
+
+<!-- SLIDE 3: OVERVIEW DATA -->
+<section class="slide">
+  <div class="grain"></div>
+  <div class="v-gold"></div>
+  <span class="ghost" style="right: -4%; bottom: -8%; font-size: 36vw; opacity: 0.025;">矿</span>
+  <div class="gold-orb" style="top: 10%; right: 25%; width: 250px; height: 250px;"></div>
+  <div class="slide-body left">
+    <div class="label">Founded 1986 — Shanghang, Fujian</div>
+    <h2>From Provincial<br>Mine to <span class="gold-text">Global<br>Powerhouse</span></h2>
+    <div class="gold-rule"></div>
+    <p class="sub">Zijin Mining Group has transformed from a single gold mine in southeastern China into one of the world's most aggressive resource acquirers.</p>
+    <div class="stat-row">
+      <div class="stat"><div class="val">$28B</div><div class="lbl">Market Cap</div></div>
+      <div class="stat"><div class="val">67t</div><div class="lbl">Gold / Year</div></div>
+      <div class="stat"><div class="val">1Mt</div><div class="lbl">Copper / Year</div></div>
+    </div>
+    <!-- Revenue bars -->
+    <div style="display: flex; gap: 2px; align-items: flex-end; height: 100px; margin-top: 32px;">
+      <div style="width: 3px; height: 12%; background: var(--gold); opacity: 0.3; border-radius: 1px 1px 0 0;"></div>
+      <div style="width: 3px; height: 16%; background: var(--gold); opacity: 0.35; border-radius: 1px 1px 0 0;"></div>
+      <div style="width: 3px; height: 20%; background: var(--gold); opacity: 0.4; border-radius: 1px 1px 0 0;"></div>
+      <div style="width: 3px; height: 24%; background: var(--gold); opacity: 0.4; border-radius: 1px 1px 0 0;"></div>
+      <div style="width: 3px; height: 30%; background: var(--gold); opacity: 0.45; border-radius: 1px 1px 0 0;"></div>
+      <div style="width: 3px; height: 35%; background: var(--gold); opacity: 0.5; border-radius: 1px 1px 0 0;"></div>
+      <div style="width: 3px; height: 38%; background: var(--gold); opacity: 0.5; border-radius: 1px 1px 0 0;"></div>
+      <div style="width: 3px; height: 42%; background: var(--gold); opacity: 0.55; border-radius: 1px 1px 0 0;"></div>
+      <div style="width: 3px; height: 48%; background: var(--gold); opacity: 0.55; border-radius: 1px 1px 0 0;"></div>
+      <div style="width: 3px; height: 55%; background: var(--gold); opacity: 0.6; border-radius: 1px 1px 0 0;"></div>
+      <div style="width: 3px; height: 60%; background: var(--gold); opacity: 0.65; border-radius: 1px 1px 0 0;"></div>
+      <div style="width: 3px; height: 65%; background: var(--gold); opacity: 0.7; border-radius: 1px 1px 0 0;"></div>
+      <div style="width: 3px; height: 72%; background: var(--gold); opacity: 0.75; border-radius: 1px 1px 0 0;"></div>
+      <div style="width: 3px; height: 78%; background: var(--gold); opacity: 0.8; border-radius: 1px 1px 0 0;"></div>
+      <div style="width: 3px; height: 85%; background: var(--gold-bright); opacity: 0.9; border-radius: 1px 1px 0 0;"></div>
+      <div style="width: 3px; height: 92%; background: var(--gold-bright); opacity: 0.95; border-radius: 1px 1px 0 0;"></div>
+      <div style="width: 3px; height: 100%; background: var(--gold-bright); border-radius: 1px 1px 0 0;"></div>
+    </div>
+    <div style="font-size: 0.55rem; opacity: 0.25; letter-spacing: 1px; margin-top: 6px;">2008 — Revenue Growth — 2025</div>
+  </div>
+
+  <!-- Right side: vertical chars -->
+  <div style="position: absolute; right: 80px; top: 50%; transform: translateY(-50%);">
+    <div style="font-family: 'Noto Serif SC', serif; font-size: 4.5rem; color: var(--gold); opacity: 0.08; line-height: 1.5; writing-mode: vertical-rl;">紫金矿业集团</div>
+  </div>
+  <div class="gold-border-bottom"></div>
+  <span class="sn">03 / 08</span>
+</section>
+
+<!-- SLIDE 4: SECTION OPENER — GLOBAL -->
+<section class="scroll-opener">
+  <div class="mountains">
+    <svg viewBox="0 0 1200 600" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0 600 L0 320 Q150 220 300 300 Q420 160 580 260 Q720 120 880 220 Q1000 150 1120 200 L1200 180 L1200 600 Z" fill="#C4A24E" opacity="0.06"/>
+      <path d="M0 600 L0 400 Q200 330 400 380 Q580 280 760 350 Q900 270 1060 320 L1200 300 L1200 600 Z" fill="#6B9E88" opacity="0.04"/>
+    </svg>
+  </div>
+  <div class="inner">
+    <div class="cn-label">第 二 部 分</div>
+    <h2>Global<br>Operations</h2>
+    <div class="gold-rule center"></div>
+  </div>
+  <div class="proverb">金山银山不如绿水青山</div>
+  <span class="sn">04 / 08</span>
+</section>
+
+<!-- SLIDE 5: GLOBAL OPS -->
+<section class="slide">
+  <div class="grain"></div>
+  <span class="ghost" style="left: -6%; top: -5%; font-size: 40vw; opacity: 0.02;">龙</span>
+
+  <!-- Network map -->
+  <div style="position: absolute; left: 60px; top: 50%; transform: translateY(-50%); width: 36vw; height: 28vw; z-index: 1;">
+    <svg viewBox="0 0 400 300" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;">
+      <line x1="280" y1="100" x2="140" y2="180" stroke="#C4A24E" stroke-width="0.5" opacity="0.25"/>
+      <line x1="280" y1="100" x2="150" y2="100" stroke="#C4A24E" stroke-width="0.5" opacity="0.25"/>
+      <line x1="280" y1="100" x2="340" y2="180" stroke="#C4A24E" stroke-width="0.5" opacity="0.25"/>
+      <line x1="280" y1="100" x2="60" y2="150" stroke="#C4A24E" stroke-width="0.5" opacity="0.15"/>
+      <line x1="280" y1="100" x2="200" y2="60" stroke="#C4A24E" stroke-width="0.5" opacity="0.15"/>
+      <circle cx="280" cy="100" r="6" fill="#C4A24E"/>
+      <circle cx="280" cy="100" r="14" fill="none" stroke="#C4A24E" stroke-width="0.5" opacity="0.3">
+        <animate attributeName="r" values="14;20;14" dur="3s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="0.3;0;0.3" dur="3s" repeatCount="indefinite"/>
+      </circle>
+      <text x="280" y="85" text-anchor="middle" fill="#EDE6D8" font-size="7" opacity="0.4" font-family="Outfit">CHINA</text>
+      <circle cx="140" cy="180" r="4" fill="#6B9E88"/>
+      <text x="140" y="195" text-anchor="middle" fill="#EDE6D8" font-size="6" opacity="0.35" font-family="Outfit">DRC</text>
+      <circle cx="150" cy="100" r="3.5" fill="#6B9E88"/>
+      <text x="150" y="92" text-anchor="middle" fill="#EDE6D8" font-size="6" opacity="0.35" font-family="Outfit">SERBIA</text>
+      <circle cx="340" cy="180" r="3.5" fill="#6B9E88"/>
+      <text x="340" y="195" text-anchor="middle" fill="#EDE6D8" font-size="6" opacity="0.35" font-family="Outfit">PNG</text>
+      <circle cx="60" cy="150" r="3" fill="#6B9E88"/>
+      <text x="60" y="165" text-anchor="middle" fill="#EDE6D8" font-size="6" opacity="0.35" font-family="Outfit">COLOMBIA</text>
+      <circle cx="200" cy="60" r="3" fill="#6B9E88"/>
+      <text x="200" y="52" text-anchor="middle" fill="#EDE6D8" font-size="6" opacity="0.35" font-family="Outfit">KAZAKHSTAN</text>
+    </svg>
+  </div>
+
+  <div class="slide-body right">
+    <div class="label">15 Countries of Operation</div>
+    <h2><span class="jade-text">Belt &amp; Road</span><br>Resource Network</h2>
+    <div class="gold-rule right"></div>
+    <ul class="items right">
+      <li>Kamoa-Kakula copper mine (DRC) — world-class, 45% stake</li>
+      <li>Timok copper-gold project (Serbia) — EU gateway</li>
+      <li>Porgera gold mine (PNG) — JV restart with Barrick</li>
+      <li>Continental Gold (Colombia) — $1.4B hostile takeover</li>
+      <li>Central Asian corridor — lithium &amp; rare earth exploration</li>
+    </ul>
+  </div>
+  <div class="gold-border-bottom"></div>
+  <span class="sn">05 / 08</span>
+</section>
+
+<!-- SLIDE 6: SECTION OPENER — STRATEGY -->
+<section class="scroll-opener">
+  <div class="mountains">
+    <svg viewBox="0 0 1200 600" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0 600 L0 280 Q200 180 400 260 Q550 120 720 220 Q880 80 1040 180 Q1120 140 1200 160 L1200 600 Z" fill="#EDE6D8" opacity="0.05"/>
+      <path d="M0 600 L0 380 Q300 300 550 360 Q750 270 950 330 Q1080 290 1200 310 L1200 600 Z" fill="#EDE6D8" opacity="0.025"/>
+    </svg>
+  </div>
+  <div class="inner">
+    <div class="cn-label">第 三 部 分</div>
+    <h2>Geostrategic<br>Analysis</h2>
+    <div class="gold-rule center"></div>
+  </div>
+  <div class="proverb">运筹帷幄之中决胜千里之外</div>
+  <span class="sn">06 / 08</span>
+</section>
+
+<!-- SLIDE 7: STRATEGY -->
+<section class="slide">
+  <div class="grain"></div>
+  <div class="v-gold"></div>
+  <span class="ghost" style="right: -5%; top: 50%; transform: translateY(-50%); font-size: 30vw; opacity: 0.02;">战</span>
+  <div class="gold-orb" style="bottom: 15%; right: 20%; width: 280px; height: 280px;"></div>
+  <div class="slide-body left" style="max-width: 55%;">
+    <div class="label">State-Enterprise Nexus</div>
+    <h2>The <span class="gold-text">Invisible<br>Hand</span> of Beijing</h2>
+    <div class="gold-rule"></div>
+    <p class="sub" style="margin-bottom: 20px;">Zijin operates in the grey zone between private enterprise and state instrument — commercially driven, strategically aligned.</p>
+    <div class="card-grid card-grid-2">
+      <div class="card">
+        <h3>SOE-Adjacent</h3>
+        <p>Shanghang State Asset holds founding stake. Quasi-SOE governance blurs commercial and strategic interests.</p>
+      </div>
+      <div class="card">
+        <h3>Dual Circulation</h3>
+        <p>Domestic resource security paired with global supply chain control. Critical minerals are national priority.</p>
+      </div>
+      <div class="card">
+        <h3>Policy Banks</h3>
+        <p>CDB &amp; Exim Bank financing at preferential rates enables Zijin to outbid Western competitors on acquisitions.</p>
+      </div>
+      <div class="card">
+        <h3>Non-Aligned</h3>
+        <p>Operations in non-aligned states reduce exposure to Western sanctions architecture.</p>
+      </div>
+    </div>
+  </div>
+  <!-- Vertical characters -->
+  <div style="position: absolute; right: 70px; top: 50%; transform: translateY(-50%);">
+    <div style="font-family: 'Noto Serif SC', serif; font-size: 3.8rem; color: var(--gold); opacity: 0.06; line-height: 1.5; writing-mode: vertical-rl;">国家战略资源安全</div>
+  </div>
+  <div class="gold-border-bottom"></div>
+  <span class="sn">07 / 08</span>
+</section>
+
+<!-- SLIDE 8: CONCLUSION -->
+<section class="slide">
+  <div class="grain"></div>
+  <span class="ghost" style="left: 50%; top: 50%; transform: translate(-50%, -50%); font-size: 52vw; opacity: 0.015;">龙</span>
+  <div class="gold-orb" style="top: 30%; left: 30%; width: 400px; height: 400px; opacity: 0.04;"></div>
+  <div class="slide-body center">
+    <div style="font-family: 'Noto Serif SC', serif; font-weight: 200; font-size: 0.85rem; color: var(--jade); letter-spacing: 8px; margin-bottom: 20px;">结 论</div>
+    <h1 style="font-size: 4.2rem;">The Dragon<br><span class="gold-text">Extends</span></h1>
+    <div class="gold-rule center"></div>
+    <p class="sub" style="text-align: center; max-width: 580px;">
+      Zijin Mining is not merely a company — it is a vector of Chinese geostrategic power, extending the dragon veins of resource control into every continent where critical minerals lie.
+    </p>
+    <!-- Gold seal -->
+    <div style="margin-top: 44px;">
+      <div style="width: 54px; height: 54px; border: 2px solid var(--gold); display: flex; align-items: center; justify-content: center; font-family: 'Noto Serif SC', serif; font-size: 1.3rem; color: var(--gold); opacity: 0.6; transform: rotate(-3deg); margin: 0 auto;">紫金</div>
+    </div>
+    <p style="margin-top: 28px; font-size: 0.6rem; opacity: 0.2; letter-spacing: 3px;">KEDGE BUSINESS SCHOOL — 谢谢</p>
+  </div>
+  <div class="proverb" style="opacity: 0.12;">龙行天下</div>
+  <span class="sn">08 / 08</span>
+</section>
+
+<div class="nav-hint">Scroll to navigate</div>
+</body>
+</html>

@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zijin Mining — Golden Mountain 金山</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;600;700;800&family=Noto+Serif+SC:wght@300;600;900&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --black: #0A0A0A;
+    --gold: #C9A84C;
+    --gold-dim: #8B7333;
+    --slate: #3A3D42;
+    --offwhite: #F0EDE5;
+    --gold-glow: rgba(201, 168, 76, 0.08);
+  }
+
+  html { font-size: 16px; scroll-behavior: smooth; }
+  body {
+    background: var(--black);
+    color: var(--offwhite);
+    font-family: 'Inter Tight', sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* --- SLIDE SYSTEM --- */
+  .slide {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+  }
+
+  .slide-content {
+    width: 60%;
+    padding: 80px 60px 60px 80px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    z-index: 2;
+  }
+
+  .slide-aside {
+    width: 40%;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  /* --- TOPOGRAPHIC LINES --- */
+  .topo-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    opacity: 0.04;
+  }
+  .topo-bg svg { width: 100%; height: 100%; }
+
+  /* --- GHOST CHARACTERS --- */
+  .ghost-char {
+    font-family: 'Noto Serif SC', serif;
+    font-weight: 900;
+    color: var(--gold);
+    opacity: 0.06;
+    font-size: 28vw;
+    line-height: 0.85;
+    position: absolute;
+    user-select: none;
+    pointer-events: none;
+  }
+
+  .ghost-char.right { right: -5%; top: 50%; transform: translateY(-50%); }
+  .ghost-char.center { left: 50%; top: 50%; transform: translate(-50%, -50%); font-size: 40vw; }
+
+  /* --- TYPOGRAPHY --- */
+  .slide-label {
+    font-size: 0.7rem;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 20px;
+    font-weight: 600;
+  }
+
+  h1 {
+    font-family: 'Inter Tight', sans-serif;
+    font-weight: 800;
+    font-size: 4.5rem;
+    line-height: 1.0;
+    letter-spacing: -2px;
+    margin-bottom: 24px;
+  }
+
+  h2 {
+    font-family: 'Inter Tight', sans-serif;
+    font-weight: 700;
+    font-size: 2.8rem;
+    line-height: 1.1;
+    letter-spacing: -1px;
+    margin-bottom: 20px;
+  }
+
+  h3 {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: var(--gold);
+    margin-bottom: 12px;
+    letter-spacing: 1px;
+  }
+
+  .subtitle {
+    font-size: 1.15rem;
+    color: var(--offwhite);
+    opacity: 0.6;
+    font-weight: 300;
+    line-height: 1.6;
+    max-width: 500px;
+  }
+
+  .gold { color: var(--gold); }
+
+  /* --- GOLD LINE DIVIDER --- */
+  .gold-line {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, var(--gold) 0%, transparent 100%);
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    z-index: 5;
+  }
+
+  .gold-line-short {
+    width: 60px;
+    height: 2px;
+    background: var(--gold);
+    margin: 24px 0;
+  }
+
+  /* --- INK BRUSHSTROKE DIVIDER --- */
+  .brushstroke-divider {
+    width: 3px;
+    height: 120px;
+    background: linear-gradient(180deg, var(--gold), transparent);
+    border-radius: 2px;
+    position: absolute;
+    right: 40%;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0.3;
+  }
+
+  /* --- TITLE SLIDE --- */
+  .slide-title {
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+  .slide-title .slide-content {
+    width: 100%;
+    align-items: center;
+    text-align: center;
+    padding: 60px;
+  }
+  .slide-title h1 { font-size: 5.5rem; margin-bottom: 8px; }
+  .slide-title .cn-title {
+    font-family: 'Noto Serif SC', serif;
+    font-weight: 300;
+    font-size: 1.8rem;
+    color: var(--gold);
+    margin-bottom: 40px;
+    letter-spacing: 12px;
+  }
+
+  /* --- DATA CARDS --- */
+  .data-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+    margin-top: 16px;
+  }
+  .data-card {
+    border: 1px solid rgba(201, 168, 76, 0.15);
+    padding: 24px;
+    position: relative;
+  }
+  .data-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: linear-gradient(135deg, var(--gold-glow), transparent);
+    pointer-events: none;
+  }
+  .data-value {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--gold);
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  .data-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--offwhite);
+    opacity: 0.5;
+  }
+
+  /* --- BULLET POINTS --- */
+  .points { list-style: none; margin-top: 12px; }
+  .points li {
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(201, 168, 76, 0.1);
+    font-size: 0.95rem;
+    font-weight: 300;
+    line-height: 1.6;
+    color: var(--offwhite);
+    opacity: 0.8;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .points li::before {
+    content: '';
+    width: 6px; height: 6px;
+    background: var(--gold);
+    flex-shrink: 0;
+    margin-top: 8px;
+  }
+
+  /* --- MINERAL IMAGE PLACEHOLDER --- */
+  .mineral-img {
+    width: 80%;
+    aspect-ratio: 3/4;
+    background: linear-gradient(160deg, #1a1608 0%, #2a2010 40%, #3d3018 70%, #1a1608 100%);
+    position: relative;
+    overflow: hidden;
+  }
+  .mineral-img::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 30% 40%, rgba(201, 168, 76, 0.3) 0%, transparent 50%),
+      radial-gradient(ellipse at 70% 60%, rgba(201, 168, 76, 0.15) 0%, transparent 40%),
+      radial-gradient(ellipse at 50% 80%, rgba(160, 130, 50, 0.2) 0%, transparent 35%);
+  }
+  .mineral-img .gold-vein {
+    position: absolute;
+    width: 2px;
+    background: linear-gradient(180deg, transparent, var(--gold), transparent);
+    opacity: 0.4;
+  }
+  .mineral-img .gold-vein:nth-child(1) { height: 60%; top: 20%; left: 30%; transform: rotate(15deg); }
+  .mineral-img .gold-vein:nth-child(2) { height: 40%; top: 35%; left: 55%; transform: rotate(-20deg); }
+  .mineral-img .gold-vein:nth-child(3) { height: 50%; top: 15%; left: 70%; transform: rotate(8deg); }
+
+  /* --- MAP PLACEHOLDER --- */
+  .map-container {
+    width: 85%;
+    aspect-ratio: 4/3;
+    position: relative;
+    border: 1px solid rgba(201, 168, 76, 0.12);
+  }
+  .map-dot {
+    width: 8px; height: 8px;
+    background: var(--gold);
+    border-radius: 50%;
+    position: absolute;
+    box-shadow: 0 0 12px rgba(201, 168, 76, 0.5);
+  }
+  .map-dot::after {
+    content: '';
+    width: 20px; height: 20px;
+    border: 1px solid rgba(201, 168, 76, 0.3);
+    border-radius: 50%;
+    position: absolute;
+    top: -6px; left: -6px;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 0.5; }
+    50% { transform: scale(1.5); opacity: 0; }
+  }
+  .map-line {
+    position: absolute;
+    height: 1px;
+    background: linear-gradient(90deg, var(--gold), transparent);
+    opacity: 0.2;
+    transform-origin: left center;
+  }
+
+  /* --- SLIDE NUMBERS --- */
+  .slide-num {
+    position: absolute;
+    bottom: 30px;
+    right: 40px;
+    font-size: 0.7rem;
+    letter-spacing: 3px;
+    color: var(--gold);
+    opacity: 0.4;
+    z-index: 10;
+  }
+
+  /* --- NAVIGATION HINT --- */
+  .nav-hint {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.65rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold);
+    opacity: 0.3;
+    z-index: 100;
+    animation: fadeInUp 1s ease 2s both;
+  }
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateX(-50%) translateY(10px); }
+    to { opacity: 0.3; transform: translateX(-50%) translateY(0); }
+  }
+
+  /* --- TOPO SVG PATTERN --- */
+  .topo-lines {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0.035;
+  }
+</style>
+</head>
+<body>
+
+<!-- ==================== SLIDE 1: TITLE ==================== -->
+<section class="slide slide-title">
+  <div class="topo-bg">
+    <svg viewBox="0 0 1000 600" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0 300 Q250 200 500 280 T1000 250" stroke="#C9A84C" stroke-width="0.5"/>
+      <path d="M0 320 Q250 220 500 300 T1000 270" stroke="#C9A84C" stroke-width="0.5"/>
+      <path d="M0 340 Q250 240 500 320 T1000 290" stroke="#C9A84C" stroke-width="0.5"/>
+      <path d="M0 360 Q250 260 500 340 T1000 310" stroke="#C9A84C" stroke-width="0.5"/>
+      <path d="M0 380 Q250 280 500 360 T1000 330" stroke="#C9A84C" stroke-width="0.5"/>
+      <path d="M0 200 Q300 150 600 190 T1000 170" stroke="#C9A84C" stroke-width="0.3"/>
+      <path d="M0 220 Q300 170 600 210 T1000 190" stroke="#C9A84C" stroke-width="0.3"/>
+      <path d="M0 420 Q350 350 700 400 T1000 380" stroke="#C9A84C" stroke-width="0.3"/>
+      <path d="M0 440 Q350 370 700 420 T1000 400" stroke="#C9A84C" stroke-width="0.3"/>
+    </svg>
+  </div>
+  <span class="ghost-char center">金</span>
+  <div class="slide-content">
+    <div class="slide-label">Geostrategy Analysis</div>
+    <h1>ZIJIN<br>MINING</h1>
+    <div class="cn-title">紫 金 矿 业</div>
+    <div class="gold-line-short" style="margin: 0 auto 24px;"></div>
+    <p class="subtitle">Global Expansion, Resource Control &<br>Geopolitical Strategy of China's Mining Giant</p>
+    <p style="margin-top: 40px; font-size: 0.75rem; opacity: 0.35; letter-spacing: 2px;">KEDGE BUSINESS SCHOOL — 2026</p>
+  </div>
+  <div class="gold-line"></div>
+  <span class="slide-num">01 / 06</span>
+</section>
+
+<!-- ==================== SLIDE 2: OVERVIEW ==================== -->
+<section class="slide">
+  <div class="topo-lines">
+    <svg viewBox="0 0 600 600" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;">
+      <path d="M0 100 Q150 50 300 90 T600 70" stroke="#C9A84C" stroke-width="1"/>
+      <path d="M0 200 Q150 150 300 190 T600 170" stroke="#C9A84C" stroke-width="1"/>
+      <path d="M0 300 Q150 250 300 290 T600 270" stroke="#C9A84C" stroke-width="1"/>
+      <path d="M0 400 Q150 350 300 390 T600 370" stroke="#C9A84C" stroke-width="1"/>
+      <path d="M0 500 Q150 450 300 490 T600 470" stroke="#C9A84C" stroke-width="1"/>
+    </svg>
+  </div>
+  <div class="slide-content">
+    <div class="slide-label">Company Overview</div>
+    <h2>The <span class="gold">Golden</span><br>Empire</h2>
+    <div class="gold-line-short"></div>
+    <p class="subtitle">Founded in 1986 in Shanghang, Fujian Province. Today the largest gold producer and one of the largest copper producers in China.</p>
+    <div class="data-grid">
+      <div class="data-card">
+        <div class="data-value">$28B</div>
+        <div class="data-label">Market Capitalization</div>
+      </div>
+      <div class="data-card">
+        <div class="data-value">67+</div>
+        <div class="data-label">Tonnes Gold / Year</div>
+      </div>
+      <div class="data-card">
+        <div class="data-value">15</div>
+        <div class="data-label">Countries of Operation</div>
+      </div>
+      <div class="data-card">
+        <div class="data-value">26K</div>
+        <div class="data-label">Global Workforce</div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-aside">
+    <span class="ghost-char right">矿</span>
+    <div class="mineral-img">
+      <div class="gold-vein"></div>
+      <div class="gold-vein"></div>
+      <div class="gold-vein"></div>
+    </div>
+  </div>
+  <div class="brushstroke-divider"></div>
+  <div class="gold-line"></div>
+  <span class="slide-num">02 / 06</span>
+</section>
+
+<!-- ==================== SLIDE 3: GLOBAL OPERATIONS ==================== -->
+<section class="slide">
+  <div class="slide-content">
+    <div class="slide-label">Global Footprint</div>
+    <h2>Resource<br><span class="gold">Geography</span></h2>
+    <div class="gold-line-short"></div>
+    <ul class="points">
+      <li>Dominant positions in copper (DRC, Serbia) and gold (Papua New Guinea, Colombia)</li>
+      <li>Strategic acquisitions along Belt & Road corridors in Central Asia and Africa</li>
+      <li>Leverages Chinese state-backed financing for rapid overseas expansion</li>
+      <li>Vertical integration from exploration through smelting and refining</li>
+    </ul>
+  </div>
+  <div class="slide-aside">
+    <span class="ghost-char right">山</span>
+    <div class="map-container">
+      <!-- China -->
+      <div class="map-dot" style="top: 35%; left: 72%;"></div>
+      <!-- DRC -->
+      <div class="map-dot" style="top: 58%; left: 38%;"></div>
+      <!-- Serbia -->
+      <div class="map-dot" style="top: 30%; left: 38%;"></div>
+      <!-- PNG -->
+      <div class="map-dot" style="top: 55%; left: 82%;"></div>
+      <!-- Colombia -->
+      <div class="map-dot" style="top: 48%; left: 14%;"></div>
+      <!-- Lines from China -->
+      <div class="map-line" style="top: 36%; left: 40%; width: 32%; transform: rotate(-2deg);"></div>
+      <div class="map-line" style="top: 38%; left: 40%; width: 32%; transform: rotate(12deg);"></div>
+      <div class="map-line" style="top: 36%; left: 72%; width: 12%; transform: rotate(25deg);"></div>
+    </div>
+  </div>
+  <div class="brushstroke-divider"></div>
+  <div class="gold-line"></div>
+  <span class="slide-num">03 / 06</span>
+</section>
+
+<!-- ==================== SLIDE 4: STRATEGY ==================== -->
+<section class="slide">
+  <div class="slide-content">
+    <div class="slide-label">Geostrategic Analysis</div>
+    <h2>State <span class="gold">&</span><br>Enterprise</h2>
+    <div class="gold-line-short"></div>
+    <p class="subtitle" style="margin-bottom: 24px;">The interplay between Zijin's commercial ambitions and Beijing's resource security doctrine.</p>
+    <ul class="points">
+      <li>SOE-adjacent governance model — Shanghang State Asset retains significant stake</li>
+      <li>Alignment with "dual circulation" strategy and critical mineral stockpiling</li>
+      <li>Geopolitical hedging through diversified resource portfolios across non-aligned states</li>
+    </ul>
+  </div>
+  <div class="slide-aside">
+    <span class="ghost-char right" style="font-size: 22vw; opacity: 0.04;">战</span>
+    <div style="text-align: center;">
+      <div style="font-family: 'Noto Serif SC', serif; font-size: 3.5rem; color: var(--gold); opacity: 0.7; line-height: 1.4; letter-spacing: 8px;">
+        国<br>家<br>战<br>略
+      </div>
+      <div style="margin-top: 16px; font-size: 0.65rem; letter-spacing: 3px; opacity: 0.3; text-transform: uppercase;">National Strategy</div>
+    </div>
+  </div>
+  <div class="brushstroke-divider"></div>
+  <div class="gold-line"></div>
+  <span class="slide-num">04 / 06</span>
+</section>
+
+<!-- ==================== SLIDE 5: RISKS ==================== -->
+<section class="slide">
+  <div class="slide-content">
+    <div class="slide-label">Risk Landscape</div>
+    <h2>Fault<br><span class="gold">Lines</span></h2>
+    <div class="gold-line-short"></div>
+    <div class="data-grid" style="grid-template-columns: 1fr;">
+      <div class="data-card">
+        <h3>Environmental & Social</h3>
+        <p style="font-size: 0.85rem; opacity: 0.6; line-height: 1.6;">Tailings dam failures, pollution incidents in PNG and DRC. Growing ESG scrutiny from international investors and host communities.</p>
+      </div>
+      <div class="data-card">
+        <h3>Geopolitical Exposure</h3>
+        <p style="font-size: 0.85rem; opacity: 0.6; line-height: 1.6;">Operations in conflict zones and politically unstable regions. Sanctions risk from US-China strategic competition over critical minerals.</p>
+      </div>
+      <div class="data-card">
+        <h3>Regulatory & Reputational</h3>
+        <p style="font-size: 0.85rem; opacity: 0.6; line-height: 1.6;">EU Critical Raw Materials Act and resource nationalism in host countries threaten operational continuity and expansion plans.</p>
+      </div>
+    </div>
+  </div>
+  <div class="slide-aside">
+    <span class="ghost-char right" style="opacity: 0.04;">险</span>
+  </div>
+  <div class="brushstroke-divider"></div>
+  <div class="gold-line"></div>
+  <span class="slide-num">05 / 06</span>
+</section>
+
+<!-- ==================== SLIDE 6: CONCLUSION ==================== -->
+<section class="slide slide-title">
+  <div class="topo-bg">
+    <svg viewBox="0 0 1000 600" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0 280 Q250 180 500 260 T1000 230" stroke="#C9A84C" stroke-width="0.5"/>
+      <path d="M0 300 Q250 200 500 280 T1000 250" stroke="#C9A84C" stroke-width="0.5"/>
+      <path d="M0 320 Q250 220 500 300 T1000 270" stroke="#C9A84C" stroke-width="0.5"/>
+      <path d="M0 340 Q250 240 500 320 T1000 290" stroke="#C9A84C" stroke-width="0.5"/>
+    </svg>
+  </div>
+  <span class="ghost-char center" style="font-size: 35vw;">金</span>
+  <div class="slide-content">
+    <div class="cn-title" style="font-size: 1.2rem; letter-spacing: 8px; margin-bottom: 32px;">结 论</div>
+    <h1 style="font-size: 4rem;">Conclusion</h1>
+    <div class="gold-line-short" style="margin: 24px auto;"></div>
+    <p class="subtitle" style="text-align: center; max-width: 600px;">
+      Zijin Mining exemplifies the convergence of corporate ambition and state geostrategy — a bellwether for the future of Chinese resource diplomacy in an era of great power competition.
+    </p>
+    <p style="margin-top: 60px; font-size: 0.7rem; opacity: 0.3; letter-spacing: 2px;">
+      Thank you &mdash; 谢谢
+    </p>
+  </div>
+  <div class="gold-line"></div>
+  <span class="slide-num">06 / 06</span>
+</section>
+
+<div class="nav-hint">Scroll to navigate</div>
+
+</body>
+</html>

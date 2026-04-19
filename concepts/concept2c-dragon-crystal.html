@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zijin — Dragon Vein: Crystal Variant 龙脉·晶</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;600;700;800;900&family=Noto+Serif+SC:wght@200;400;700;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --void: #0C0818;
+    --void-mid: #140F24;
+    --void-light: #1E1834;
+    --ember: #E05830;
+    --ember-dim: rgba(224, 88, 48, 0.12);
+    --cyan: #3ABCC8;
+    --cyan-dim: rgba(58, 188, 200, 0.1);
+    --ice: #E8E4F0;
+    --ice-dim: rgba(232, 228, 240, 0.4);
+    --grid-line: rgba(58, 188, 200, 0.04);
+  }
+
+  html { font-size: 16px; scroll-behavior: smooth; }
+  body { background: var(--void); color: var(--ice); font-family: 'Space Grotesk', sans-serif; overflow-x: hidden; }
+
+  .slide { width: 100vw; height: 100vh; position: relative; overflow: hidden; }
+
+  /* --- CRYSTAL GRID --- */
+  .crystal-grid {
+    position: absolute; inset: 0; z-index: 0; pointer-events: none;
+    background-image:
+      linear-gradient(var(--grid-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+
+  /* --- HEXAGON CLUSTER --- */
+  .hex-cluster { position: absolute; z-index: 0; pointer-events: none; opacity: 0.03; }
+  .hex-cluster svg { width: 100%; height: 100%; }
+
+  /* --- GHOST CHARS --- */
+  .ghost { font-family: 'Noto Serif SC', serif; font-weight: 900; color: var(--cyan); position: absolute; user-select: none; pointer-events: none; z-index: 1; line-height: 0.85; }
+
+  /* --- GLOWING LINES --- */
+  .glow-line {
+    position: absolute; z-index: 1; pointer-events: none;
+    background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+    height: 1px; opacity: 0.06;
+  }
+  .glow-line-v {
+    position: absolute; z-index: 1; pointer-events: none;
+    background: linear-gradient(180deg, transparent, var(--ember), transparent);
+    width: 1px; opacity: 0.06;
+  }
+
+  /* --- SECTION OPENER --- */
+  .opener {
+    display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(180deg, var(--void) 0%, #080614 100%);
+  }
+  .opener .inner { position: relative; z-index: 2; text-align: center; }
+  .opener h2 { font-weight: 700; font-size: 3rem; letter-spacing: -1px; margin-bottom: 6px; }
+  .opener .cn-label { font-family: 'Noto Serif SC', serif; font-weight: 200; font-size: 0.85rem; color: var(--ember); letter-spacing: 8px; }
+
+  /* --- PROVERB --- */
+  .proverb {
+    position: absolute; z-index: 3;
+    writing-mode: vertical-rl; font-family: 'Noto Serif SC', serif; font-weight: 200;
+    letter-spacing: 10px; opacity: 0.15;
+  }
+
+  /* --- CONTENT --- */
+  .body { position: relative; z-index: 2; height: 100%; display: flex; }
+  .col { padding: 70px; display: flex; flex-direction: column; justify-content: center; }
+  .col-55 { width: 55%; }
+  .col-45 { width: 45%; }
+  .col-full { width: 100%; }
+  .center-content { position: relative; z-index: 2; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 100%; padding: 60px; }
+
+  .label { font-size: 0.6rem; letter-spacing: 5px; text-transform: uppercase; color: var(--ember); margin-bottom: 14px; font-weight: 500; }
+  h1 { font-weight: 700; font-size: 5.5rem; line-height: 0.92; letter-spacing: -3px; margin-bottom: 16px; }
+  h2 { font-weight: 700; font-size: 2.6rem; line-height: 1.05; letter-spacing: -1px; margin-bottom: 12px; }
+  h3 { font-weight: 500; font-size: 0.65rem; letter-spacing: 3px; text-transform: uppercase; color: var(--cyan); margin-bottom: 8px; }
+  .sub { font-size: 0.95rem; color: var(--ice-dim); font-weight: 300; line-height: 1.8; max-width: 500px; }
+  .ember { color: var(--ember); }
+  .cyan { color: var(--cyan); }
+
+  .rule { width: 48px; height: 2px; margin: 16px 0; }
+  .rule-ember { background: var(--ember); }
+  .rule-cyan { background: var(--cyan); }
+  .rule.center { margin: 16px auto; }
+
+  /* --- DATA --- */
+  .stat-strip { display: flex; gap: 0; margin-top: 24px; }
+  .stat-cell {
+    padding: 20px 28px;
+    border: 1px solid var(--cyan-dim);
+    position: relative;
+  }
+  .stat-cell + .stat-cell { margin-left: -1px; }
+  .stat-cell .v { font-size: 1.8rem; font-weight: 700; color: var(--ice); line-height: 1; }
+  .stat-cell .v span { font-size: 0.9rem; font-weight: 300; }
+  .stat-cell .l { font-size: 0.55rem; letter-spacing: 2px; text-transform: uppercase; color: var(--cyan); margin-top: 4px; opacity: 0.7; }
+  .stat-cell.highlight { border-color: var(--ember-dim); }
+  .stat-cell.highlight .v { color: var(--ember); }
+
+  /* --- CARDS --- */
+  .card-grid { display: grid; gap: 12px; margin-top: 20px; }
+  .card-grid-2 { grid-template-columns: 1fr 1fr; }
+  .c-card {
+    padding: 22px; position: relative;
+    border: 1px solid var(--cyan-dim);
+    background: linear-gradient(135deg, rgba(58, 188, 200, 0.02), transparent);
+  }
+  .c-card::after {
+    content: ''; position: absolute; top: -1px; left: -1px;
+    width: 12px; height: 12px;
+    border-top: 2px solid var(--ember); border-left: 2px solid var(--ember);
+    opacity: 0.4;
+  }
+  .c-card p { font-size: 0.82rem; font-weight: 300; color: var(--ice-dim); line-height: 1.7; }
+
+  /* --- LIST --- */
+  .c-list { list-style: none; margin-top: 10px; }
+  .c-list li {
+    padding: 12px 0 12px 28px; position: relative;
+    border-bottom: 1px solid var(--cyan-dim);
+    font-size: 0.85rem; font-weight: 300; line-height: 1.7; color: var(--ice-dim);
+  }
+  .c-list li::before {
+    content: ''; position: absolute; left: 0; top: 17px;
+    width: 10px; height: 10px;
+    border: 1px solid var(--ember); opacity: 0.4;
+    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+  }
+
+  /* --- HEX BADGE --- */
+  .hex-badge {
+    width: 64px; height: 64px;
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+    font-family: 'Noto Serif SC', serif; font-size: 1.4rem; color: var(--ember);
+  }
+  .hex-badge::before {
+    content: ''; position: absolute; inset: 0;
+    border: 1.5px solid var(--ember); opacity: 0.5;
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  }
+
+  /* --- CRYSTAL DIAGRAM --- */
+  .crystal-viz {
+    position: relative; width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .crystal-viz svg { max-width: 90%; max-height: 80%; }
+
+  /* --- SCAN LINE ANIMATION --- */
+  @keyframes scanline {
+    0% { transform: translateY(-100%); }
+    100% { transform: translateY(100vh); }
+  }
+  .scanline {
+    position: absolute; left: 0; width: 100%; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+    opacity: 0.03; z-index: 0; pointer-events: none;
+    animation: scanline 8s linear infinite;
+  }
+
+  /* --- SLIDE NUM --- */
+  .sn { position: absolute; bottom: 24px; right: 40px; font-size: 0.58rem; letter-spacing: 3px; color: var(--cyan); opacity: 0.2; z-index: 10; font-family: 'Space Grotesk', sans-serif; }
+
+  .nav-hint { position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); font-size: 0.55rem; letter-spacing: 3px; text-transform: uppercase; color: var(--cyan); opacity: 0.12; z-index: 100; }
+</style>
+</head>
+<body>
+
+<!-- SLIDE 1: TITLE -->
+<section class="slide">
+  <div class="crystal-grid"></div>
+  <div class="scanline"></div>
+  <span class="ghost" style="left: 50%; top: 48%; transform: translate(-50%, -50%); font-size: 52vw; opacity: 0.02;">龙</span>
+  <div class="glow-line" style="top: 30%; left: 0; width: 100%;"></div>
+  <div class="glow-line" style="top: 70%; left: 0; width: 100%;"></div>
+  <div class="glow-line-v" style="left: 25%; top: 0; height: 100%;"></div>
+  <div class="glow-line-v" style="left: 75%; top: 0; height: 100%;"></div>
+
+  <div class="center-content">
+    <div class="label" style="letter-spacing: 8px;">Geostrategy — KEDGE 2026</div>
+    <h1>ZIJIN<br><span class="ember">MINING</span></h1>
+    <div style="font-family: 'Noto Serif SC', serif; font-weight: 200; font-size: 1.2rem; color: var(--cyan); letter-spacing: 14px; margin-bottom: 24px; opacity: 0.6;">紫 金 矿 业</div>
+    <div class="rule rule-ember center"></div>
+    <p class="sub" style="text-align: center;">
+      Crystalline networks of power — mapping the mineral<br>architecture of China's geostrategic ambition
+    </p>
+    <div style="margin-top: 44px; display: flex; gap: 20px; align-items: center;">
+      <div class="hex-badge">紫金</div>
+      <div style="text-align: left;">
+        <div style="font-size: 0.55rem; color: var(--cyan); opacity: 0.4; letter-spacing: 2px;">龙脉 · 晶</div>
+        <div style="font-size: 0.55rem; opacity: 0.25; letter-spacing: 2px;">DRAGON VEIN — CRYSTAL</div>
+      </div>
+    </div>
+  </div>
+  <span class="sn">01 / 08</span>
+</section>
+
+<!-- SLIDE 2: SECTION OPENER — OVERVIEW -->
+<section class="slide opener">
+  <div class="crystal-grid"></div>
+  <!-- Crystalline mountain form -->
+  <div style="position: absolute; inset: 0; z-index: 0;">
+    <svg viewBox="0 0 1200 600" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;">
+      <!-- Geometric/faceted mountains -->
+      <polygon points="200,600 350,300 400,380 500,200 550,280 650,150 700,250 800,180 900,280 950,220 1050,300 1200,600" fill="none" stroke="#3ABCC8" stroke-width="0.5" opacity="0.06"/>
+      <polygon points="0,600 100,400 200,450 350,350 500,420 650,350 800,400 950,340 1100,380 1200,360 1200,600" fill="none" stroke="#3ABCC8" stroke-width="0.5" opacity="0.04"/>
+      <!-- Internal facet lines -->
+      <line x1="500" y1="200" x2="400" y2="380" stroke="#3ABCC8" stroke-width="0.3" opacity="0.04"/>
+      <line x1="500" y1="200" x2="650" y2="150" stroke="#3ABCC8" stroke-width="0.3" opacity="0.04"/>
+      <line x1="650" y1="150" x2="700" y2="250" stroke="#3ABCC8" stroke-width="0.3" opacity="0.04"/>
+      <line x1="800" y1="180" x2="950" y2="220" stroke="#3ABCC8" stroke-width="0.3" opacity="0.04"/>
+    </svg>
+  </div>
+  <div class="inner">
+    <div class="cn-label" style="font-family: 'Noto Serif SC', serif; font-weight: 200; font-size: 0.85rem; color: var(--ember); letter-spacing: 8px;">第 一 部 分</div>
+    <h2>Company<br>Overview</h2>
+    <div class="rule rule-ember center"></div>
+  </div>
+  <div class="proverb" style="right: 36px; top: 50%; transform: translateY(-50%); font-size: 0.8rem; color: var(--cyan);">千里之行始于足下</div>
+  <span class="sn">02 / 08</span>
+</section>
+
+<!-- SLIDE 3: OVERVIEW -->
+<section class="slide">
+  <div class="crystal-grid"></div>
+  <div class="scanline" style="animation-delay: -3s;"></div>
+  <span class="ghost" style="right: -5%; bottom: -5%; font-size: 32vw; opacity: 0.015;">矿</span>
+  <div class="body">
+    <div class="col col-55">
+      <div class="label">Founded 1986 — Shanghang, Fujian</div>
+      <h2>Provincial Mine<br>to <span class="ember">Global</span> Network</h2>
+      <div class="rule rule-ember"></div>
+      <p class="sub">Zijin's crystalline expansion pattern mirrors the mineral structures it extracts — branching outward along fault lines of geopolitical opportunity.</p>
+      <div class="stat-strip">
+        <div class="stat-cell highlight"><div class="v">$28<span>B</span></div><div class="l">Market Cap</div></div>
+        <div class="stat-cell"><div class="v">67<span>t</span></div><div class="l">Gold / Year</div></div>
+        <div class="stat-cell"><div class="v">1<span>Mt</span></div><div class="l">Copper / Year</div></div>
+        <div class="stat-cell"><div class="v">15</div><div class="l">Countries</div></div>
+      </div>
+    </div>
+    <div class="col col-45 crystal-viz">
+      <!-- Crystal structure diagram -->
+      <svg viewBox="0 0 300 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Hexagonal crystal -->
+        <polygon points="150,30 250,80 250,180 150,230 50,180 50,80" stroke="#3ABCC8" stroke-width="0.5" opacity="0.15"/>
+        <polygon points="150,60 220,95 220,165 150,200 80,165 80,95" stroke="#3ABCC8" stroke-width="0.5" opacity="0.1"/>
+        <polygon points="150,90 190,110 190,150 150,170 110,150 110,110" stroke="#E05830" stroke-width="0.5" opacity="0.2"/>
+        <!-- Radial lines -->
+        <line x1="150" y1="130" x2="150" y2="30" stroke="#3ABCC8" stroke-width="0.3" opacity="0.1"/>
+        <line x1="150" y1="130" x2="250" y2="80" stroke="#3ABCC8" stroke-width="0.3" opacity="0.1"/>
+        <line x1="150" y1="130" x2="250" y2="180" stroke="#3ABCC8" stroke-width="0.3" opacity="0.1"/>
+        <line x1="150" y1="130" x2="150" y2="230" stroke="#3ABCC8" stroke-width="0.3" opacity="0.1"/>
+        <line x1="150" y1="130" x2="50" y2="180" stroke="#3ABCC8" stroke-width="0.3" opacity="0.1"/>
+        <line x1="150" y1="130" x2="50" y2="80" stroke="#3ABCC8" stroke-width="0.3" opacity="0.1"/>
+        <!-- Center node -->
+        <circle cx="150" cy="130" r="4" fill="#E05830"/>
+        <circle cx="150" cy="130" r="10" fill="none" stroke="#E05830" stroke-width="0.5" opacity="0.3">
+          <animate attributeName="r" values="10;16;10" dur="3s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="0.3;0;0.3" dur="3s" repeatCount="indefinite"/>
+        </circle>
+        <!-- Vertex labels -->
+        <text x="150" y="22" text-anchor="middle" fill="#E8E4F0" font-size="6" opacity="0.3" font-family="Space Grotesk">GOLD</text>
+        <text x="260" y="78" text-anchor="start" fill="#E8E4F0" font-size="6" opacity="0.3" font-family="Space Grotesk">COPPER</text>
+        <text x="260" y="185" text-anchor="start" fill="#E8E4F0" font-size="6" opacity="0.3" font-family="Space Grotesk">LITHIUM</text>
+        <text x="150" y="248" text-anchor="middle" fill="#E8E4F0" font-size="6" opacity="0.3" font-family="Space Grotesk">ZINC</text>
+        <text x="40" y="185" text-anchor="end" fill="#E8E4F0" font-size="6" opacity="0.3" font-family="Space Grotesk">COBALT</text>
+        <text x="40" y="78" text-anchor="end" fill="#E8E4F0" font-size="6" opacity="0.3" font-family="Space Grotesk">SILVER</text>
+      </svg>
+    </div>
+  </div>
+  <span class="sn">03 / 08</span>
+</section>
+
+<!-- SLIDE 4: SECTION — GLOBAL -->
+<section class="slide opener">
+  <div class="crystal-grid"></div>
+  <div style="position: absolute; inset: 0; z-index: 0;">
+    <svg viewBox="0 0 1200 600" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;">
+      <polygon points="100,600 250,280 400,400 550,180 700,320 850,140 1000,260 1100,200 1200,280 1200,600" fill="none" stroke="#E05830" stroke-width="0.5" opacity="0.04"/>
+      <polygon points="0,600 150,420 300,480 500,360 700,440 900,360 1100,400 1200,380 1200,600" fill="none" stroke="#3ABCC8" stroke-width="0.3" opacity="0.03"/>
+    </svg>
+  </div>
+  <div class="inner">
+    <div class="cn-label" style="font-family: 'Noto Serif SC', serif; font-weight: 200; font-size: 0.85rem; color: var(--ember); letter-spacing: 8px;">第 二 部 分</div>
+    <h2>Global<br>Operations</h2>
+    <div class="rule rule-cyan center"></div>
+  </div>
+  <div class="proverb" style="right: 36px; top: 50%; transform: translateY(-50%); font-size: 0.8rem; color: var(--ember);">金山银山不如绿水青山</div>
+  <span class="sn">04 / 08</span>
+</section>
+
+<!-- SLIDE 5: GLOBAL OPS -->
+<section class="slide">
+  <div class="crystal-grid"></div>
+  <span class="ghost" style="left: -4%; top: -3%; font-size: 38vw; opacity: 0.012;">龙</span>
+  <div class="body">
+    <div class="col col-full" style="padding: 60px 80px;">
+      <div class="label">15 Countries — 5 Continents</div>
+      <h2>Resource <span class="cyan">Network</span></h2>
+      <div class="rule rule-cyan"></div>
+      <div class="card-grid card-grid-2" style="max-width: 100%; margin-top: 24px;">
+        <div class="c-card">
+          <h3>Copper Belt</h3>
+          <ul class="c-list">
+            <li>Kamoa-Kakula, DRC — world's 4th largest, 45% stake</li>
+            <li>Timok upper zone, Serbia — EU market gateway</li>
+          </ul>
+        </div>
+        <div class="c-card">
+          <h3>Gold Corridor</h3>
+          <ul class="c-list">
+            <li>Porgera, PNG — JV restart with Barrick Gold</li>
+            <li>Buritica, Colombia — $1.4B hostile acquisition</li>
+          </ul>
+        </div>
+        <div class="c-card">
+          <h3>Strategic Minerals</h3>
+          <ul class="c-list">
+            <li>Lithium exploration — Central Asia &amp; Argentina</li>
+            <li>Rare earth processing — Myanmar partnerships</li>
+          </ul>
+        </div>
+        <div class="c-card">
+          <h3>Belt &amp; Road Corridors</h3>
+          <ul class="c-list">
+            <li>Acquisitions trace BRI infrastructure investment paths</li>
+            <li>Policy bank financing enables competitive outbidding</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <span class="sn">05 / 08</span>
+</section>
+
+<!-- SLIDE 6: SECTION — STRATEGY -->
+<section class="slide opener">
+  <div class="crystal-grid"></div>
+  <div style="position: absolute; inset: 0; z-index: 0;">
+    <svg viewBox="0 0 1200 600" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;">
+      <polygon points="0,500 200,250 400,380 600,120 800,300 1000,80 1200,200 1200,600 0,600" fill="none" stroke="#E8E4F0" stroke-width="0.3" opacity="0.03"/>
+    </svg>
+  </div>
+  <div class="inner">
+    <div class="cn-label" style="font-family: 'Noto Serif SC', serif; font-weight: 200; font-size: 0.85rem; color: var(--ember); letter-spacing: 8px;">第 三 部 分</div>
+    <h2>Geostrategic<br>Analysis</h2>
+    <div class="rule rule-ember center"></div>
+  </div>
+  <div class="proverb" style="right: 36px; top: 50%; transform: translateY(-50%); font-size: 0.8rem; color: var(--cyan);">运筹帷幄决胜千里</div>
+  <span class="sn">06 / 08</span>
+</section>
+
+<!-- SLIDE 7: STRATEGY -->
+<section class="slide">
+  <div class="crystal-grid"></div>
+  <div class="scanline" style="animation-delay: -5s;"></div>
+  <span class="ghost" style="right: -4%; top: 50%; transform: translateY(-50%); font-size: 28vw; opacity: 0.012;">战</span>
+  <div class="body">
+    <div class="col col-55">
+      <div class="label">State-Enterprise Nexus</div>
+      <h2>The <span class="ember">Architecture</span><br>of Control</h2>
+      <div class="rule rule-ember"></div>
+      <p class="sub" style="margin-bottom: 20px;">Zijin's corporate structure is a crystalline lattice — commercially independent at each node, but structurally aligned to Beijing's geostrategic coordinates.</p>
+      <div class="card-grid card-grid-2">
+        <div class="c-card">
+          <h3>SOE-Adjacent</h3>
+          <p>Shanghang State Asset holds founding stake. Quasi-SOE governance structures.</p>
+        </div>
+        <div class="c-card">
+          <h3>Dual Circulation</h3>
+          <p>Domestic security + global supply chain control. Critical minerals = national priority.</p>
+        </div>
+        <div class="c-card">
+          <h3>Policy Banks</h3>
+          <p>CDB &amp; Exim Bank at preferential rates. De facto acquisition subsidies.</p>
+        </div>
+        <div class="c-card">
+          <h3>Sanctions Hedging</h3>
+          <p>Non-aligned state portfolio reduces Western sanctions architecture exposure.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col col-45" style="align-items: center; justify-content: center;">
+      <div style="font-family: 'Noto Serif SC', serif; font-size: 3.5rem; color: var(--ember); opacity: 0.06; writing-mode: vertical-rl; letter-spacing: 20px; line-height: 1.5;">国家战略资源</div>
+    </div>
+  </div>
+  <span class="sn">07 / 08</span>
+</section>
+
+<!-- SLIDE 8: CONCLUSION -->
+<section class="slide">
+  <div class="crystal-grid"></div>
+  <div class="scanline" style="animation-delay: -1s;"></div>
+  <span class="ghost" style="left: 50%; top: 48%; transform: translate(-50%, -50%); font-size: 48vw; opacity: 0.01;">龙</span>
+  <div class="glow-line" style="top: 35%; left: 0; width: 100%; opacity: 0.04;"></div>
+  <div class="glow-line" style="top: 65%; left: 0; width: 100%; opacity: 0.04;"></div>
+  <div class="center-content">
+    <div style="font-family: 'Noto Serif SC', serif; font-weight: 200; font-size: 0.85rem; color: var(--cyan); letter-spacing: 8px; margin-bottom: 16px; opacity: 0.5;">结 论</div>
+    <h1 style="font-size: 4rem;">Crystal<br><span class="ember">Dragon</span></h1>
+    <div class="rule rule-ember center"></div>
+    <p class="sub" style="text-align: center; max-width: 560px;">
+      Zijin Mining's expansion is not random — it follows the crystalline logic of mineral geology and geopolitical fault lines. Each acquisition is a node in a lattice of state-commercial power that extends China's resource reach into every critical zone on earth.
+    </p>
+    <div style="margin-top: 40px;">
+      <div class="hex-badge" style="margin: 0 auto;">紫金</div>
+    </div>
+    <div style="margin-top: 20px; font-size: 0.55rem; opacity: 0.18; letter-spacing: 3px;">KEDGE BUSINESS SCHOOL — 谢谢</div>
+  </div>
+  <div class="proverb" style="right: 36px; top: 50%; transform: translateY(-50%); font-size: 0.8rem; color: var(--ember); opacity: 0.08;">龙行天下</div>
+  <span class="sn">08 / 08</span>
+</section>
+
+<div class="nav-hint">Scroll to navigate</div>
+</body>
+</html>

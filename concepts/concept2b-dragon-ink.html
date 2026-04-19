@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zijin — Dragon Vein: Ink Variant 龙脉·墨</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;600;700;800;900&family=Noto+Serif+SC:wght@200;300;400;600;700;900&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --ink: #0E0C14;
+    --ink-mid: #181520;
+    --ink-light: #24202E;
+    --vermillion: #C4382A;
+    --vermillion-dim: rgba(196, 56, 42, 0.15);
+    --mist: #8BA8A0;
+    --mist-dim: rgba(139, 168, 160, 0.25);
+    --rice: #F0E8D8;
+    --rice-dim: rgba(240, 232, 216, 0.4);
+    --rice-ghost: rgba(240, 232, 216, 0.06);
+  }
+
+  html { font-size: 16px; scroll-behavior: smooth; }
+  body { background: var(--ink); color: var(--rice); font-family: 'Outfit', sans-serif; overflow-x: hidden; }
+
+  .slide { width: 100vw; height: 100vh; position: relative; overflow: hidden; }
+
+  /* --- RICE PAPER TEXTURE --- */
+  .paper-texture {
+    position: absolute; inset: 0; z-index: 0; opacity: 0.008; pointer-events: none;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(240, 232, 216, 0.5) 2px, rgba(240, 232, 216, 0.5) 3px);
+  }
+
+  /* --- BRUSH STROKE DIVIDERS --- */
+  .brush-h {
+    width: 100%; height: 3px; position: relative; overflow: hidden;
+    background: linear-gradient(90deg,
+      transparent 0%, var(--rice) 5%, var(--rice) 8%,
+      transparent 10%, var(--rice) 15%, var(--rice) 85%,
+      transparent 88%, var(--rice) 92%, transparent 100%);
+    opacity: 0.06;
+  }
+  .brush-v {
+    position: absolute; width: 3px; z-index: 5;
+    background: linear-gradient(180deg,
+      transparent 0%, var(--rice) 8%, var(--rice) 15%,
+      transparent 20%, var(--rice) 28%, var(--rice) 72%,
+      transparent 78%, var(--rice) 85%, transparent 100%);
+    opacity: 0.06;
+  }
+
+  /* --- GHOST CHARS --- */
+  .ghost { font-family: 'Noto Serif SC', serif; font-weight: 900; color: var(--rice); position: absolute; user-select: none; pointer-events: none; z-index: 1; line-height: 0.85; }
+
+  /* --- INK WASH SLIDE --- */
+  .ink-slide {
+    display: flex; align-items: center; justify-content: center;
+    background: var(--ink);
+  }
+  .ink-slide .wash { position: absolute; inset: 0; z-index: 0; }
+  .ink-slide .wash svg { width: 100%; height: 100%; }
+  .ink-slide .center-content { position: relative; z-index: 2; text-align: center; }
+
+  /* --- PROVERB VERTICAL --- */
+  .proverb {
+    position: absolute; z-index: 3;
+    writing-mode: vertical-rl; font-family: 'Noto Serif SC', serif; font-weight: 300;
+    letter-spacing: 12px; color: var(--vermillion); opacity: 0.2;
+  }
+
+  /* --- VERMILLION SEAL --- */
+  .seal {
+    width: 50px; height: 50px; border: 2px solid var(--vermillion);
+    display: inline-flex; align-items: center; justify-content: center;
+    font-family: 'Noto Serif SC', serif; font-size: 1.2rem; color: var(--vermillion);
+    transform: rotate(-2deg); opacity: 0.7;
+  }
+
+  /* --- CONTENT --- */
+  .body { position: relative; z-index: 2; height: 100%; display: flex; }
+  .col { padding: 70px; display: flex; flex-direction: column; justify-content: center; }
+  .col-60 { width: 60%; }
+  .col-40 { width: 40%; }
+  .col-full { width: 100%; align-items: center; text-align: center; }
+
+  .label { font-size: 0.6rem; letter-spacing: 6px; text-transform: uppercase; color: var(--vermillion); margin-bottom: 14px; font-weight: 600; }
+  h1 { font-weight: 900; font-size: 5.5rem; line-height: 0.9; letter-spacing: -3px; margin-bottom: 12px; }
+  h2 { font-weight: 700; font-size: 3rem; line-height: 1.0; letter-spacing: -1px; margin-bottom: 12px; }
+  h3 { font-weight: 600; font-size: 0.65rem; letter-spacing: 3px; text-transform: uppercase; color: var(--vermillion); margin-bottom: 8px; }
+  .sub { font-size: 1rem; color: var(--rice-dim); font-weight: 200; line-height: 1.8; max-width: 480px; }
+  .red { color: var(--vermillion); }
+  .mist { color: var(--mist); }
+
+  .ink-rule { width: 60px; height: 2px; margin: 16px 0; position: relative; overflow: hidden; }
+  .ink-rule::before {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(90deg, var(--vermillion) 0%, var(--vermillion) 60%, transparent 100%);
+  }
+  .ink-rule.center { margin: 16px auto; }
+  .ink-rule.center::before { background: linear-gradient(90deg, transparent, var(--vermillion), transparent); }
+
+  /* --- CALLIGRAPHIC NUMBER --- */
+  .cal-num {
+    font-family: 'Noto Serif SC', serif; font-weight: 900;
+    font-size: 6rem; color: var(--vermillion); opacity: 0.08;
+    line-height: 1; position: absolute;
+  }
+
+  /* --- DATA --- */
+  .stats { display: flex; gap: 40px; margin-top: 24px; }
+  .stats .v { font-size: 2.2rem; font-weight: 800; color: var(--rice); line-height: 1; }
+  .stats .l { font-size: 0.58rem; letter-spacing: 2px; text-transform: uppercase; color: var(--mist); margin-top: 4px; }
+
+  /* --- CARDS --- */
+  .ink-cards { display: grid; gap: 0; margin-top: 20px; }
+  .ink-cards-2 { grid-template-columns: 1fr 1fr; }
+  .ink-card {
+    padding: 24px; position: relative;
+    border: 1px solid var(--rice-ghost);
+  }
+  .ink-card::before {
+    content: ''; position: absolute; top: 0; left: 0; width: 3px; height: 100%;
+    background: linear-gradient(180deg, var(--vermillion), transparent);
+    opacity: 0.3;
+  }
+  .ink-card p { font-size: 0.82rem; font-weight: 200; color: var(--rice-dim); line-height: 1.7; }
+
+  /* --- LIST --- */
+  .ink-list { list-style: none; margin-top: 8px; }
+  .ink-list li {
+    padding: 14px 0 14px 24px; position: relative;
+    border-bottom: 1px solid rgba(240, 232, 216, 0.04);
+    font-size: 0.88rem; font-weight: 200; line-height: 1.7; color: var(--rice-dim);
+  }
+  .ink-list li::before {
+    content: ''; position: absolute; left: 0; top: 20px;
+    width: 8px; height: 1px; background: var(--vermillion); opacity: 0.5;
+  }
+
+  /* --- SLIDE NUM --- */
+  .sn { position: absolute; bottom: 28px; left: 70px; font-size: 0.58rem; letter-spacing: 3px; color: var(--vermillion); opacity: 0.18; z-index: 10; }
+
+  /* --- LARGE CALLIGRAPHY PANEL --- */
+  .cal-panel {
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+  }
+  .cal-panel .big-char {
+    font-family: 'Noto Serif SC', serif; font-weight: 900;
+    font-size: 14rem; color: var(--rice); opacity: 0.04;
+    line-height: 0.85;
+  }
+  .cal-panel .overlay-text {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    text-align: center;
+  }
+
+  .nav-hint { position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); font-size: 0.55rem; letter-spacing: 3px; text-transform: uppercase; color: var(--vermillion); opacity: 0.12; z-index: 100; }
+</style>
+</head>
+<body>
+
+<!-- SLIDE 1: TITLE — FULL INK WASH -->
+<section class="slide ink-slide">
+  <div class="paper-texture"></div>
+  <div class="wash">
+    <svg viewBox="0 0 1200 600" xmlns="http://www.w3.org/2000/svg">
+      <!-- Layered mountain silhouettes, ink-wash style -->
+      <path d="M0 600 L0 320 Q80 240 180 300 Q260 180 380 270 Q480 140 600 230 Q700 120 820 200 Q920 100 1020 170 Q1100 130 1200 160 L1200 600 Z" fill="#F0E8D8" opacity="0.04"/>
+      <path d="M0 600 L0 400 Q120 340 260 380 Q380 280 520 350 Q640 260 780 330 Q900 250 1040 310 L1200 280 L1200 600 Z" fill="#F0E8D8" opacity="0.025"/>
+      <path d="M0 600 L0 480 Q200 440 420 460 Q580 420 740 450 Q900 420 1060 440 L1200 430 L1200 600 Z" fill="#8BA8A0" opacity="0.015"/>
+      <!-- Flowing water lines -->
+      <path d="M0 520 Q300 500 600 515 T1200 505" stroke="#F0E8D8" stroke-width="0.5" fill="none" opacity="0.03"/>
+      <path d="M0 540 Q300 520 600 535 T1200 525" stroke="#F0E8D8" stroke-width="0.5" fill="none" opacity="0.02"/>
+    </svg>
+  </div>
+  <!-- Large background character -->
+  <span class="ghost" style="left: 50%; top: 48%; transform: translate(-50%, -50%); font-size: 55vw; opacity: 0.02;">龙</span>
+
+  <div class="center-content">
+    <div style="font-family: 'Noto Serif SC', serif; font-weight: 200; font-size: 1rem; color: var(--mist); letter-spacing: 10px; margin-bottom: 24px;">紫 金 矿 业</div>
+    <h1 style="margin-bottom: 4px;">ZIJIN</h1>
+    <h1 style="font-size: 4rem; font-weight: 300; letter-spacing: 8px; margin-bottom: 28px;"><span class="red">MINING</span></h1>
+    <div class="ink-rule center"></div>
+    <p class="sub" style="text-align: center; max-width: 500px;">
+      An ink-wash meditation on power, mineral wealth,<br>and the dragon veins beneath the earth
+    </p>
+    <div style="margin-top: 52px;">
+      <div class="seal">紫金</div>
+    </div>
+    <div style="margin-top: 20px; font-size: 0.58rem; opacity: 0.18; letter-spacing: 3px;">KEDGE BUSINESS SCHOOL — 2026</div>
+  </div>
+
+  <div class="proverb" style="right: 40px; top: 50%; transform: translateY(-50%); font-size: 0.9rem;">天行健君子以自强不息</div>
+  <div class="proverb" style="left: 40px; top: 50%; transform: translateY(-50%); font-size: 0.75rem; opacity: 0.1;">地势坤君子以厚德载物</div>
+  <span class="sn">01 / 08</span>
+</section>
+
+<!-- SLIDE 2: SECTION — OVERVIEW (FULL INK WASH) -->
+<section class="slide ink-slide">
+  <div class="paper-texture"></div>
+  <div class="wash">
+    <svg viewBox="0 0 1200 600" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0 600 L0 350 Q150 250 320 330 Q450 200 600 290 Q750 160 900 250 Q1020 180 1120 220 L1200 200 L1200 600 Z" fill="#F0E8D8" opacity="0.06"/>
+      <path d="M0 600 L0 420 Q200 360 400 400 Q600 320 800 380 Q1000 310 1200 350 L1200 600 Z" fill="#8BA8A0" opacity="0.03"/>
+    </svg>
+  </div>
+  <div class="center-content">
+    <div style="font-family: 'Noto Serif SC', serif; font-weight: 200; font-size: 0.85rem; color: var(--vermillion); letter-spacing: 8px;">第 一 部 分</div>
+    <h2 style="margin-top: 8px;">Company Overview</h2>
+    <div class="ink-rule center"></div>
+    <p class="sub" style="text-align: center; font-family: 'Noto Serif SC', serif; font-weight: 300; font-size: 0.85rem; color: var(--mist); letter-spacing: 2px;">
+      千里之行始于足下 — A journey of a thousand miles begins with a single step
+    </p>
+  </div>
+  <span class="sn">02 / 08</span>
+</section>
+
+<!-- SLIDE 3: OVERVIEW DATA -->
+<section class="slide">
+  <div class="paper-texture"></div>
+  <div class="brush-v" style="left: 58%; top: 0; height: 100%;"></div>
+  <span class="cal-num" style="right: 60px; top: 40px;">壹</span>
+  <div class="body">
+    <div class="col col-60">
+      <div class="label">Founded 1986 — Fujian Province</div>
+      <h2>Provincial Gold<br>to <span class="red">Global Empire</span></h2>
+      <div class="ink-rule"></div>
+      <p class="sub">From a single mountain in southeastern China to the fourth-largest copper mine on earth. Zijin's rise mirrors China's own transformation.</p>
+      <div class="stats">
+        <div><div class="v">$28<span style="font-size: 1.2rem; font-weight: 300;">B</span></div><div class="l">Market Cap</div></div>
+        <div><div class="v">67<span style="font-size: 1.2rem; font-weight: 300;">t</span></div><div class="l">Gold / Year</div></div>
+        <div><div class="v">1<span style="font-size: 1.2rem; font-weight: 300;">Mt</span></div><div class="l">Copper / Year</div></div>
+        <div><div class="v">15</div><div class="l">Countries</div></div>
+      </div>
+    </div>
+    <div class="col col-40 cal-panel">
+      <div class="big-char">金</div>
+      <div class="overlay-text">
+        <div style="font-family: 'Noto Serif SC', serif; font-weight: 200; font-size: 0.75rem; color: var(--mist); letter-spacing: 4px;">GOLD</div>
+        <div style="font-family: 'Noto Serif SC', serif; font-weight: 700; font-size: 2.5rem; color: var(--rice); opacity: 0.15; margin-top: 4px;">金</div>
+      </div>
+    </div>
+  </div>
+  <span class="sn">03 / 08</span>
+</section>
+
+<!-- SLIDE 4: SECTION — GLOBAL -->
+<section class="slide ink-slide">
+  <div class="paper-texture"></div>
+  <div class="wash">
+    <svg viewBox="0 0 1200 600" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0 600 L0 300 Q200 180 400 280 Q550 100 720 210 Q880 60 1040 170 Q1120 120 1200 140 L1200 600 Z" fill="#F0E8D8" opacity="0.05"/>
+      <path d="M0 600 L0 420 Q300 340 600 400 Q800 310 1000 370 Q1100 330 1200 350 L1200 600 Z" fill="#C4382A" opacity="0.02"/>
+    </svg>
+  </div>
+  <div class="center-content">
+    <div style="font-family: 'Noto Serif SC', serif; font-weight: 200; font-size: 0.85rem; color: var(--vermillion); letter-spacing: 8px;">第 二 部 分</div>
+    <h2 style="margin-top: 8px;">Global Operations</h2>
+    <div class="ink-rule center"></div>
+    <p class="sub" style="text-align: center; font-family: 'Noto Serif SC', serif; font-weight: 300; font-size: 0.85rem; color: var(--mist); letter-spacing: 2px;">
+      金山银山不如绿水青山 — Mountains of gold pale beside green waters
+    </p>
+  </div>
+  <span class="sn">04 / 08</span>
+</section>
+
+<!-- SLIDE 5: GLOBAL OPS -->
+<section class="slide">
+  <div class="paper-texture"></div>
+  <span class="cal-num" style="left: 60px; top: 40px;">贰</span>
+  <span class="ghost" style="right: -8%; top: 50%; transform: translateY(-50%); font-size: 35vw; opacity: 0.015;">龙</span>
+  <div class="body">
+    <div class="col col-full" style="align-items: flex-start; text-align: left; padding: 70px 80px;">
+      <div class="label">15 Countries — 5 Continents</div>
+      <h2>Resource <span class="mist">Geography</span></h2>
+      <div class="ink-rule"></div>
+      <div class="ink-cards ink-cards-2" style="width: 100%; max-width: 900px;">
+        <div class="ink-card">
+          <h3>Copper Belt</h3>
+          <ul class="ink-list">
+            <li>Kamoa-Kakula, DRC — world's 4th largest, 45% stake</li>
+            <li>Timok upper zone, Serbia — EU market gateway</li>
+            <li>Cobre Panama — monitoring amid regulatory shifts</li>
+          </ul>
+        </div>
+        <div class="ink-card">
+          <h3>Gold Corridor</h3>
+          <ul class="ink-list">
+            <li>Porgera, PNG — JV restart with Barrick Gold</li>
+            <li>Buritica, Colombia — $1.4B hostile acquisition</li>
+            <li>Zijinshan, China — flagship domestic operation</li>
+          </ul>
+        </div>
+        <div class="ink-card">
+          <h3>Strategic Minerals</h3>
+          <ul class="ink-list">
+            <li>Lithium exploration — Central Asia &amp; Argentina</li>
+            <li>Rare earth processing — Myanmar partnerships</li>
+          </ul>
+        </div>
+        <div class="ink-card">
+          <h3>Belt &amp; Road Alignment</h3>
+          <ul class="ink-list">
+            <li>Acquisitions trace BRI corridors in Central/South Asia and East Africa</li>
+            <li>Chinese policy bank financing enables rapid outbidding of Western competitors</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <span class="sn">05 / 08</span>
+</section>
+
+<!-- SLIDE 6: SECTION — STRATEGY -->
+<section class="slide ink-slide">
+  <div class="paper-texture"></div>
+  <div class="wash">
+    <svg viewBox="0 0 1200 600" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0 600 L0 260 Q200 150 420 250 Q580 80 760 190 Q920 50 1080 150 Q1150 110 1200 130 L1200 600 Z" fill="#F0E8D8" opacity="0.045"/>
+      <path d="M0 600 L0 400 Q350 310 700 380 Q900 290 1100 350 L1200 330 L1200 600 Z" fill="#F0E8D8" opacity="0.02"/>
+    </svg>
+  </div>
+  <div class="center-content">
+    <div style="font-family: 'Noto Serif SC', serif; font-weight: 200; font-size: 0.85rem; color: var(--vermillion); letter-spacing: 8px;">第 三 部 分</div>
+    <h2 style="margin-top: 8px;">Geostrategic Analysis</h2>
+    <div class="ink-rule center"></div>
+    <p class="sub" style="text-align: center; font-family: 'Noto Serif SC', serif; font-weight: 300; font-size: 0.85rem; color: var(--mist); letter-spacing: 2px;">
+      运筹帷幄之中 决胜千里之外 — Plan within the tent, triumph a thousand miles away
+    </p>
+  </div>
+  <span class="sn">06 / 08</span>
+</section>
+
+<!-- SLIDE 7: STRATEGY -->
+<section class="slide">
+  <div class="paper-texture"></div>
+  <div class="brush-v" style="left: 55%; top: 0; height: 100%;"></div>
+  <span class="cal-num" style="right: 60px; top: 40px;">叁</span>
+  <div class="body">
+    <div class="col" style="width: 55%; padding-right: 48px;">
+      <div class="label">State-Enterprise Nexus</div>
+      <h2>The <span class="red">Invisible</span><br>Hand</h2>
+      <div class="ink-rule"></div>
+      <p class="sub" style="margin-bottom: 20px;">Zijin inhabits the liminal space between commercial enterprise and instrument of state — a dragon that serves two masters.</p>
+      <ul class="ink-list">
+        <li>Shanghang State Asset Management retains founding stake — quasi-SOE governance</li>
+        <li>"Dual circulation" alignment: domestic resource security + global supply chain control</li>
+        <li>China Development Bank &amp; Exim Bank financing at preferential rates</li>
+        <li>Strategic mineral stockpiling for copper, cobalt, lithium national reserves</li>
+        <li>Portfolio diversified into non-aligned states to hedge sanctions exposure</li>
+      </ul>
+    </div>
+    <div class="col cal-panel" style="width: 45%;">
+      <div class="big-char" style="font-size: 16rem; opacity: 0.03;">战</div>
+      <div class="overlay-text">
+        <div style="font-family: 'Noto Serif SC', serif; font-weight: 900; font-size: 3rem; color: var(--rice); opacity: 0.06; writing-mode: vertical-rl; letter-spacing: 16px;">国家战略</div>
+      </div>
+    </div>
+  </div>
+  <span class="sn">07 / 08</span>
+</section>
+
+<!-- SLIDE 8: CONCLUSION -->
+<section class="slide ink-slide">
+  <div class="paper-texture"></div>
+  <div class="wash">
+    <svg viewBox="0 0 1200 600" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0 600 L0 350 Q100 270 220 330 Q340 200 480 290 Q600 160 740 260 Q860 140 980 220 Q1080 170 1200 200 L1200 600 Z" fill="#F0E8D8" opacity="0.05"/>
+      <path d="M0 600 L0 460 Q200 410 400 440 Q600 390 800 430 Q1000 400 1200 420 L1200 600 Z" fill="#8BA8A0" opacity="0.02"/>
+    </svg>
+  </div>
+  <span class="ghost" style="left: 50%; top: 48%; transform: translate(-50%, -50%); font-size: 50vw; opacity: 0.015;">龙</span>
+  <div class="center-content">
+    <div style="font-family: 'Noto Serif SC', serif; font-weight: 200; font-size: 0.85rem; color: var(--mist); letter-spacing: 8px; margin-bottom: 16px;">结 论</div>
+    <h1 style="font-size: 4rem;">Where the<br><span class="red">Dragon</span> Sleeps</h1>
+    <div class="ink-rule center"></div>
+    <p class="sub" style="text-align: center; max-width: 560px;">
+      Beneath the ink-wash mountains, dragon veins of copper and gold flow outward from China to every corner of the earth. Zijin Mining is the hand that follows these veins — and the state that guides the hand.
+    </p>
+    <div style="margin-top: 44px;">
+      <div class="seal">紫金</div>
+    </div>
+    <div style="margin-top: 20px; font-size: 0.58rem; opacity: 0.18; letter-spacing: 3px;">KEDGE BUSINESS SCHOOL — 谢谢</div>
+  </div>
+  <div class="proverb" style="right: 36px; top: 50%; transform: translateY(-50%); font-size: 0.85rem; opacity: 0.12;">龙行天下</div>
+  <span class="sn">08 / 08</span>
+</section>
+
+<div class="nav-hint">Scroll to navigate</div>
+</body>
+</html>

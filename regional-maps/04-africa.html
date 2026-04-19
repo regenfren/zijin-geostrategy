@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zijin — Africa Operations 非洲</title>
+<link rel="stylesheet" href="_styles.css">
+</head>
+<body>
+<section class="slide">
+  <div class="crystal-grid"></div>
+  <span class="ghost" style="left: -7%; bottom: -12%; font-size: 52vw; opacity: 0.016;">非</span>
+  <div class="glow-line" style="top: 22%; width: 100%;"></div>
+  <div class="glow-line" style="bottom: 22%; width: 100%;"></div>
+  <div class="glow-line-v" style="left: 30%; height: 100%;"></div>
+  <div class="glow-line-v" style="right: 30%; height: 100%;"></div>
+
+  <div class="header">
+    <div class="cn-label">第 四 部 分 · 非 洲</div>
+    <h1>The <span class="accent">Copperbelt</span></h1>
+    <div class="rule"></div>
+    <div class="sub">Sub-Saharan Resource Frontier — Kamoa-Kakula Anchors the Portfolio</div>
+  </div>
+
+  <div class="map-wrap"><svg id="map"></svg></div>
+
+  <div class="legend">
+    <div class="legend-item"><span class="legend-dot" style="background:var(--ember);color:var(--ember);"></span>Copper</div>
+    <div class="legend-item"><span class="legend-dot" style="background:var(--gold);color:var(--gold);"></span>Gold</div>
+    <div class="legend-item"><span class="legend-dot" style="background:var(--zinc);color:var(--zinc);"></span>Zinc / Poly</div>
+  </div>
+
+  <div class="info-panel" id="panel">
+    <span class="close" id="close">✕</span>
+    <h3 id="p-type">Asset</h3>
+    <h2 id="p-name">—</h2>
+    <div class="country" id="p-cn">—</div>
+    <div class="rule-ember"></div>
+    <p id="p-desc">Select a marker.</p>
+    <div class="meta">
+      <div><div class="l">Stake</div><div class="v" id="p-stake">—</div></div>
+      <div><div class="l">Country</div><div class="v" id="p-region">—</div></div>
+      <div><div class="l">Commodity</div><div class="v" id="p-com">—</div></div>
+      <div><div class="l">Status</div><div class="v" id="p-status">—</div></div>
+    </div>
+  </div>
+
+  <div class="hex-badge">非洲</div>
+  <div class="proverb">矿 山 之 脉 · 通 达 天 下</div>
+  <span class="sn">REGION 04 / 05 · AFRICA</span>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+<script src="https://cdn.jsdelivr.net/npm/topojson-client@3"></script>
+<script>
+const operations = [
+  { name: "Kamoa-Kakula", cn: "卡莫阿-卡库拉", country: "Dem. Rep. Congo", region: "Lualaba, DRC", lat: -10.75, lon: 25.26, type: "copper", commodity: "Copper", stake: "39.6%", status: "Operational — Phase III", desc: "World's fourth-largest copper complex. JV with Ivanhoe Mines and the DRC government; phased expansion makes Kamoa-Kakula the single largest copper asset in Zijin's global portfolio.", off: [10,-8] },
+  { name: "Akyem Gold", cn: "阿基姆金矿", country: "Ghana", region: "Eastern Region, Ghana", lat: 6.25, lon: -1.03, type: "gold", commodity: "Gold", stake: "100%", status: "Acquired 2024–25", desc: "Acquired from Newmont in Zijin's largest West African move. Consolidates its gold posture under rising Ghanaian royalty pressure and OECD-miner divestment from the region.", off: [-160,-8] },
+  { name: "Bisha", cn: "比沙", country: "Eritrea", region: "Gash-Barka, Eritrea", lat: 15.73, lon: 37.48, type: "zinc", commodity: "Copper-Zinc", stake: "55%", status: "Operational", desc: "Inherited from the 2018 Nevsun Resources acquisition. The Timok (Serbia) and Bisha (Eritrea) assets both came in that deal — one of Zijin's most consequential single transactions.", off: [10,8] },
+  { name: "South Africa Office", cn: "南非办事处", country: "South Africa", region: "Gauteng, South Africa", lat: -26.20, lon: 28.05, type: "gold", commodity: "Regional HQ", stake: "Regional office", status: "Active", desc: "Regional coordination hub for Sub-Saharan portfolio management and ongoing M&A scanning in the Southern African Development Community (SADC).", off: [10,-8] }
+];
+
+const svg = d3.select("#map");
+const w = window.innerWidth, h = window.innerHeight;
+svg.attr("viewBox", `0 0 ${w} ${h}`);
+
+const projection = d3.geoMercator()
+  .center([20, 2])
+  .scale(Math.min(w, h) * 0.95)
+  .translate([w/2, h/2 + 10]);
+
+const path = d3.geoPath(projection);
+const focusCountries = new Set(["Dem. Rep. Congo","Ghana","Eritrea","South Africa","Nigeria","Kenya","Tanzania","Ethiopia","Sudan","South Sudan","Angola","Zambia","Zimbabwe","Mozambique","Namibia","Botswana","Madagascar","Chad","Niger","Mali","Algeria","Libya","Egypt","Morocco","Mauritania","Senegal","Cameroon","Uganda","Somalia","Central African Rep.","Burkina Faso","Guinea","Côte d'Ivoire","Benin","Togo","Liberia","Sierra Leone","Gabon","Eq. Guinea","Rep. Congo","Malawi","Lesotho","Swaziland","Burundi","Rwanda","Djibouti","W. Sahara","Tunisia"]);
+
+svg.append("path").datum(d3.geoGraticule().step([10,10])).attr("class","graticule").attr("d", path);
+
+d3.json("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json").then(world => {
+  const countries = topojson.feature(world, world.objects.countries);
+  svg.append("g").selectAll("path").data(countries.features).enter().append("path")
+    .attr("class", d => focusCountries.has(d.properties.name) ? "land focus" : "land")
+    .attr("d", path)
+    .attr("data-name", d => d.properties.name);
+  svg.append("path").datum(topojson.mesh(world, world.objects.countries, (a,b) => a !== b)).attr("class","border").attr("d", path);
+
+  const g = svg.append("g");
+  const nodes = g.selectAll("g.op").data(operations).enter().append("g")
+    .attr("class", d => `op ${d.type}`)
+    .attr("transform", d => `translate(${projection([d.lon, d.lat])})`)
+    .on("mouseover", function(e,d) { svg.selectAll(".land").classed("hover", p => p.properties.name === d.country); })
+    .on("mouseout", () => svg.selectAll(".land").classed("hover", false))
+    .on("click", (e,d) => showPanel(d));
+  nodes.append("circle").attr("class","pulse").attr("r",6);
+  nodes.append("circle").attr("class","dot").attr("r",4.5);
+  nodes.each(function(d) {
+    const [ox, oy] = d.off || [10,-8];
+    const textLen = d.name.length * 6.2 + 20;
+    const g2 = d3.select(this);
+    g2.append("rect").attr("class","label-bg").attr("x", ox).attr("y", oy-10).attr("width", textLen).attr("height", 22).attr("rx",1);
+    g2.append("text").attr("class","label-txt").attr("x", ox+8).attr("y", oy+2).text(d.name);
+    g2.append("text").attr("class","label-meta").attr("x", ox+8).attr("y", oy+10).text(d.region);
+  });
+});
+
+function showPanel(d) {
+  document.getElementById("panel").classList.add("show");
+  document.getElementById("p-name").textContent = d.name;
+  document.getElementById("p-cn").textContent = d.cn;
+  document.getElementById("p-desc").textContent = d.desc;
+  document.getElementById("p-stake").textContent = d.stake;
+  document.getElementById("p-region").textContent = d.country;
+  document.getElementById("p-com").textContent = d.commodity;
+  document.getElementById("p-status").textContent = d.status;
+  document.getElementById("p-type").textContent = d.type.toUpperCase() + " ASSET";
+}
+document.getElementById("close").onclick = () => document.getElementById("panel").classList.remove("show");
+</script>
+</body>
+</html>

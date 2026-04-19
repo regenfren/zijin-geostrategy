@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zijin — Europe & Oceania 欧洲 · 大洋洲</title>
+<link rel="stylesheet" href="_styles.css">
+<style>
+  .split { position: absolute; inset: 0; z-index: 2; display: flex; }
+  .pane { flex: 1; position: relative; height: 100%; }
+  .pane svg { width: 100%; height: 100%; }
+  .pane-label { position: absolute; top: 110px; z-index: 4; font-family: 'Noto Serif SC', serif; color: var(--cyan); font-weight: 200; letter-spacing: 10px; font-size: 0.75rem; opacity: 0.55; text-transform: uppercase; }
+  .pane-label .en { display: block; font-family: 'Space Grotesk', sans-serif; font-weight: 500; font-size: 0.6rem; letter-spacing: 4px; color: var(--ice-dim); margin-top: 4px; }
+  .pane-left .pane-label { left: 60px; }
+  .pane-right .pane-label { right: 60px; text-align: right; }
+  .divider { position: absolute; top: 12%; bottom: 12%; left: 50%; width: 1px; background: linear-gradient(180deg, transparent, rgba(58,188,200,0.25), transparent); z-index: 3; }
+  .divider::before, .divider::after { content: ''; position: absolute; left: 50%; transform: translateX(-50%); width: 8px; height: 8px; border: 1px solid var(--ember); opacity: 0.5; clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); }
+  .divider::before { top: -4px; } .divider::after { bottom: -4px; }
+  .contrast-note { position: absolute; bottom: 110px; left: 50%; transform: translateX(-50%); z-index: 5; font-size: 0.58rem; letter-spacing: 4px; text-transform: uppercase; color: var(--ice-dim); opacity: 0.5; text-align: center; }
+  .contrast-note .accent { color: var(--ember); }
+  .legend { bottom: 40px; left: 50%; transform: translateX(-50%); }
+</style>
+</head>
+<body>
+<section class="slide">
+  <div class="crystal-grid"></div>
+  <span class="ghost" style="left: 12%; top: -10%; font-size: 36vw; opacity: 0.013;">欧</span>
+  <span class="ghost" style="right: 12%; bottom: -12%; font-size: 36vw; opacity: 0.013;">洋</span>
+  <div class="glow-line" style="top: 22%; width: 100%;"></div>
+  <div class="glow-line" style="bottom: 22%; width: 100%;"></div>
+
+  <div class="header">
+    <div class="cn-label">第 五 部 分 · 欧 洲 与 大 洋 洲</div>
+    <h1>The <span class="accent">Regulatory Ceiling</span></h1>
+    <div class="rule"></div>
+    <div class="sub">Serbia (EU Accession) ↔ Australia (FIRB) — Western Institutional Friction</div>
+  </div>
+
+  <div class="split">
+    <div class="pane pane-left">
+      <div class="pane-label">欧 洲<span class="en">Europe</span></div>
+      <svg id="map-eu"></svg>
+    </div>
+    <div class="pane pane-right">
+      <div class="pane-label">大 洋 洲<span class="en">Oceania</span></div>
+      <svg id="map-oc"></svg>
+    </div>
+  </div>
+  <div class="divider"></div>
+
+  <div class="contrast-note">
+    Serbia ⟶ <span class="accent">accommodating hybrid state</span> &nbsp;·&nbsp; Australia ⟶ <span class="accent">FIRB / CFIUS resistance</span>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><span class="legend-dot" style="background:var(--ember);color:var(--ember);"></span>Copper</div>
+    <div class="legend-item"><span class="legend-dot" style="background:var(--gold);color:var(--gold);"></span>Gold</div>
+  </div>
+
+  <div class="info-panel" id="panel">
+    <span class="close" id="close">✕</span>
+    <h3 id="p-type">Asset</h3>
+    <h2 id="p-name">—</h2>
+    <div class="country" id="p-cn">—</div>
+    <div class="rule-ember"></div>
+    <p id="p-desc">Select a marker.</p>
+    <div class="meta">
+      <div><div class="l">Stake</div><div class="v" id="p-stake">—</div></div>
+      <div><div class="l">Country</div><div class="v" id="p-region">—</div></div>
+      <div><div class="l">Commodity</div><div class="v" id="p-com">—</div></div>
+      <div><div class="l">Status</div><div class="v" id="p-status">—</div></div>
+    </div>
+  </div>
+
+  <div class="hex-badge">西境</div>
+  <div class="proverb">西 境 之 限 · 监 管 之 壁</div>
+  <span class="sn">REGION 05 / 05 · EUROPE & OCEANIA</span>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+<script src="https://cdn.jsdelivr.net/npm/topojson-client@3"></script>
+<script>
+const europeOps = [
+  { name: "Timok Copper–Gold", cn: "蒂莫克", country: "Serbia", region: "Bor District, Serbia", lat: 44.07, lon: 22.09, type: "copper", commodity: "Copper + Gold", stake: "100% (upper zone)", status: "Operational + expansion", desc: "Acquired through the 2018 Nevsun Resources deal and complemented by the 2018 RTB Bor purchase. Serbia's accommodating regulatory environment and EU-accession aspirations make it Zijin's most strategically nuanced European foothold — a Western-aligned state still open to Chinese capital.", off: [10,-8] }
+];
+const oceaniaOps = [
+  { name: "Norton Gold Fields", cn: "诺顿金田", country: "Australia", region: "Kalgoorlie, WA", lat: -30.75, lon: 121.47, type: "gold", commodity: "Gold", stake: "100%", status: "Operational — FIRB scrutinised", desc: "Zijin's earliest major OECD acquisition (2012). Subsequent expansion attempts have faced recurring FIRB review, foreshadowing the broader CFIUS / CSDDD regulatory wall now closing OECD jurisdictions to Chinese SOE capital.", off: [10,-8] },
+  { name: "Porgera JV", cn: "波格拉", country: "Papua New Guinea", region: "Enga, PNG", lat: -5.47, lon: 143.14, type: "gold", commodity: "Gold", stake: "24.5% (New Porgera)", status: "Restarted 2023 JV", desc: "Tripartite restart with Barrick Gold and the PNG state after the landowner-mandated 2020 closure. A case study in how Zijin negotiates around resource-nationalism-driven mine takeovers.", off: [10,-8] }
+];
+
+function buildMap(selector, ops, projection, focus) {
+  const svg = d3.select(selector);
+  const rect = svg.node().getBoundingClientRect();
+  const w = rect.width, h = rect.height;
+  svg.attr("viewBox", `0 0 ${w} ${h}`);
+  projection.translate([w/2, h/2]);
+  const path = d3.geoPath(projection);
+  svg.append("path").datum(d3.geoGraticule().step([10,10])).attr("class","graticule").attr("d", path);
+
+  d3.json("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json").then(world => {
+    const countries = topojson.feature(world, world.objects.countries);
+    svg.append("g").selectAll("path").data(countries.features).enter().append("path")
+      .attr("class", d => focus.has(d.properties.name) ? "land focus" : "land")
+      .attr("d", path)
+      .attr("data-name", d => d.properties.name);
+    svg.append("path").datum(topojson.mesh(world, world.objects.countries, (a,b) => a !== b)).attr("class","border").attr("d", path);
+
+    const g = svg.append("g");
+    const nodes = g.selectAll("g.op").data(ops).enter().append("g")
+      .attr("class", d => `op ${d.type}`)
+      .attr("transform", d => `translate(${projection([d.lon, d.lat])})`)
+      .on("mouseover", function(e,d) { svg.selectAll(".land").classed("hover", p => p.properties.name === d.country); })
+      .on("mouseout", () => svg.selectAll(".land").classed("hover", false))
+      .on("click", (e,d) => showPanel(d));
+    nodes.append("circle").attr("class","pulse").attr("r",6);
+    nodes.append("circle").attr("class","dot").attr("r",4.5);
+    nodes.each(function(d) {
+      const [ox, oy] = d.off || [10,-8];
+      const textLen = d.name.length * 6.2 + 20;
+      const g2 = d3.select(this);
+      g2.append("rect").attr("class","label-bg").attr("x", ox).attr("y", oy-10).attr("width", textLen).attr("height", 22).attr("rx",1);
+      g2.append("text").attr("class","label-txt").attr("x", ox+8).attr("y", oy+2).text(d.name);
+      g2.append("text").attr("class","label-meta").attr("x", ox+8).attr("y", oy+10).text(d.region);
+    });
+  });
+}
+
+const euFocus = new Set(["Serbia","Croatia","Slovenia","Hungary","Romania","Bulgaria","Bosnia and Herz.","Montenegro","Kosovo","Albania","North Macedonia","Greece","Austria","Slovakia","Czechia","Poland","Germany","France","Italy","Spain","Portugal","United Kingdom","Ireland","Netherlands","Belgium","Denmark","Sweden","Norway","Finland","Estonia","Latvia","Lithuania","Belarus","Ukraine","Moldova","Turkey","Switzerland"]);
+const ocFocus = new Set(["Australia","Papua New Guinea","New Zealand","Indonesia","Solomon Is.","Fiji","Vanuatu","Timor-Leste","New Caledonia","Philippines"]);
+
+const euProj = d3.geoConicConformal().parallels([40, 55]).rotate([-15, 0]).center([0, 50]).scale(700);
+const ocProj = d3.geoMercator().center([140, -20]).scale(420);
+
+buildMap("#map-eu", europeOps, euProj, euFocus);
+buildMap("#map-oc", oceaniaOps, ocProj, ocFocus);
+
+function showPanel(d) {
+  document.getElementById("panel").classList.add("show");
+  document.getElementById("p-name").textContent = d.name;
+  document.getElementById("p-cn").textContent = d.cn;
+  document.getElementById("p-desc").textContent = d.desc;
+  document.getElementById("p-stake").textContent = d.stake;
+  document.getElementById("p-region").textContent = d.country;
+  document.getElementById("p-com").textContent = d.commodity;
+  document.getElementById("p-status").textContent = d.status;
+  document.getElementById("p-type").textContent = d.type.toUpperCase() + " ASSET";
+}
+document.getElementById("close").onclick = () => document.getElementById("panel").classList.remove("show");
+</script>
+</body>
+</html>
