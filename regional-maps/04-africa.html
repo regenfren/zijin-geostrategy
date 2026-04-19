@@ -19,7 +19,7 @@
     <div class="cn-label">第 四 部 分 · 非 洲</div>
     <h1>The <span class="accent">Copperbelt</span></h1>
     <div class="rule"></div>
-    <div class="sub">Sub-Saharan Resource Frontier — Kamoa-Kakula Anchors the Portfolio</div>
+    <div class="sub">DRC Transition-Minerals Anchor — Copper · Cobalt · Lithium</div>
   </div>
 
   <div class="map-wrap"><svg id="map"></svg></div>
@@ -27,7 +27,9 @@
   <div class="legend">
     <div class="legend-item"><span class="legend-dot" style="background:var(--ember);color:var(--ember);"></span>Copper</div>
     <div class="legend-item"><span class="legend-dot" style="background:var(--gold);color:var(--gold);"></span>Gold</div>
+    <div class="legend-item"><span class="legend-dot" style="background:var(--lithium);color:var(--lithium);"></span>Lithium</div>
     <div class="legend-item"><span class="legend-dot" style="background:var(--zinc);color:var(--zinc);"></span>Zinc / Poly</div>
+    <div class="legend-item"><span class="legend-dot" style="background:var(--other);color:var(--other);"></span>PGMs</div>
   </div>
 
   <div class="info-panel" id="panel">
@@ -54,10 +56,12 @@
 <script src="https://cdn.jsdelivr.net/npm/topojson-client@3"></script>
 <script>
 const operations = [
-  { name: "Kamoa-Kakula", cn: "卡莫阿-卡库拉", country: "Dem. Rep. Congo", region: "Lualaba, DRC", lat: -10.75, lon: 25.26, type: "copper", commodity: "Copper", stake: "39.6%", status: "Operational — Phase III", desc: "World's fourth-largest copper complex. JV with Ivanhoe Mines and the DRC government; phased expansion makes Kamoa-Kakula the single largest copper asset in Zijin's global portfolio.", off: [10,-8] },
-  { name: "Akyem Gold", cn: "阿基姆金矿", country: "Ghana", region: "Eastern Region, Ghana", lat: 6.25, lon: -1.03, type: "gold", commodity: "Gold", stake: "100%", status: "Acquired 2024–25", desc: "Acquired from Newmont in Zijin's largest West African move. Consolidates its gold posture under rising Ghanaian royalty pressure and OECD-miner divestment from the region.", off: [-160,-8] },
-  { name: "Bisha", cn: "比沙", country: "Eritrea", region: "Gash-Barka, Eritrea", lat: 15.73, lon: 37.48, type: "zinc", commodity: "Copper-Zinc", stake: "55%", status: "Operational", desc: "Inherited from the 2018 Nevsun Resources acquisition. The Timok (Serbia) and Bisha (Eritrea) assets both came in that deal — one of Zijin's most consequential single transactions.", off: [10,8] },
-  { name: "South Africa Office", cn: "南非办事处", country: "South Africa", region: "Gauteng, South Africa", lat: -26.20, lon: 28.05, type: "gold", commodity: "Regional HQ", stake: "Regional office", status: "Active", desc: "Regional coordination hub for Sub-Saharan portfolio management and ongoing M&A scanning in the Southern African Development Community (SADC).", off: [10,-8] }
+  { name: "Kamoa-Kakula", cn: "卡莫阿-卡库拉", country: "Dem. Rep. Congo", region: "Lualaba, DRC", lat: -10.73, lon: 25.30, type: "copper", commodity: "Copper (±Cobalt)", stake: "44.45%", status: "Operational — Phase III ramp", desc: "Joint venture with Ivanhoe Mines and Gécamines (DRC state). World's fourth-largest and fastest-ramping copper complex; phased expansion makes Kamoa-Kakula the single largest copper asset in Zijin's global portfolio.", off: [-170,-22] },
+  { name: "Kolwezi (COMMUS)", cn: "科卢韦齐", country: "Dem. Rep. Congo", region: "Lualaba, DRC", lat: -10.70, lon: 25.54, type: "copper", commodity: "Copper + Cobalt", stake: "72%", status: "Operational — 129 kt Cu / 2.2 kt Co (2023)", desc: "Compagnie Minière de Musonoie Global (COMMUS). Zijin-operated Kolwezi open-pit producing both copper and cobalt — direct exposure to the global battery-materials supply chain.", off: [14,14] },
+  { name: "Manono NE Lithium", cn: "马诺诺锂矿", country: "Dem. Rep. Congo", region: "Tanganyika, DRC", lat: -7.30, lon: 27.40, type: "lithium", commodity: "Lithium (spodumene)", stake: "54.9%", status: "Development — title dispute with AVZ", desc: "Northeastern portion of the Manono pegmatite — one of the world's largest known hard-rock lithium resources. Title-contested with AVZ Minerals and Cominière; Zijin's stake positions it centrally in China's upstream lithium play.", off: [12,-8] },
+  { name: "Akyem Gold Mine", cn: "阿基姆金矿", country: "Ghana", region: "Eastern Region, Ghana", lat: 6.35, lon: -1.10, type: "gold", commodity: "Gold", stake: "100%", status: "Acquired 2024 from Newmont (~US$1B)", desc: "Zijin's largest West African acquisition and its first OECD-quality gold operation in Africa. Consolidates its West-African posture under rising Ghanaian royalty pressure and OECD-miner divestment from the region.", off: [-160,-8] },
+  { name: "Bisha Polymetallic", cn: "比沙", country: "Eritrea", region: "Gash-Barka, Eritrea", lat: 15.73, lon: 37.48, type: "zinc", commodity: "Cu + Zn + Au (VMS)", stake: "55%", status: "Operational", desc: "Inherited from the 2018 Nevsun Resources acquisition — the same deal brought Timok (Serbia). Sequential Cu / Zn / Au phases in a classic volcanogenic massive sulphide orebody.", off: [12,-8] },
+  { name: "Garatau PGMs", cn: "加拉陶", country: "South Africa", region: "Fetakgomo Tubatse, Limpopo", lat: -24.68, lon: 30.05, type: "other", commodity: "PGMs (Pt / Pd / Rh)", stake: "74%", status: "Development", desc: "Platinum-group-metals project on South Africa's Eastern Bushveld Complex — Zijin's entry into PGMs and indirect exposure to hydrogen and auto-catalyst supply chains. Lithium exploration acreage adjacent.", off: [12,-8] }
 ];
 
 const svg = d3.select("#map");
@@ -65,9 +69,9 @@ const w = window.innerWidth, h = window.innerHeight;
 svg.attr("viewBox", `0 0 ${w} ${h}`);
 
 const projection = d3.geoMercator()
-  .center([20, 2])
-  .scale(Math.min(w, h) * 0.95)
-  .translate([w/2, h/2 + 10]);
+  .center([22, 2])
+  .scale(Math.min(w, h) * 1.18)
+  .translate([w/2 + 80, h/2 + 10]);
 
 const path = d3.geoPath(projection);
 const focusCountries = new Set(["Dem. Rep. Congo","Ghana","Eritrea","South Africa","Nigeria","Kenya","Tanzania","Ethiopia","Sudan","South Sudan","Angola","Zambia","Zimbabwe","Mozambique","Namibia","Botswana","Madagascar","Chad","Niger","Mali","Algeria","Libya","Egypt","Morocco","Mauritania","Senegal","Cameroon","Uganda","Somalia","Central African Rep.","Burkina Faso","Guinea","Côte d'Ivoire","Benin","Togo","Liberia","Sierra Leone","Gabon","Eq. Guinea","Rep. Congo","Malawi","Lesotho","Swaziland","Burundi","Rwanda","Djibouti","W. Sahara","Tunisia"]);
